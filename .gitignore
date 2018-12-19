@@ -2,3 +2,6 @@
 /* PHPStorm's settings directory*/
 .idea/
 .idea/*
+
+/*ignore vendor packages installed by Composer*/
+vendor/
