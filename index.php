@@ -79,11 +79,11 @@ foreach ($skus as $sku){
 //print_R($note);
 	//TODO: get all child products under the product
 	$results = DB::query(
-			"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_item_number = %s",$sku);
+			"SELECT dwin_item_number FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_item_number = %s",$sku);
 
 	foreach ($results as $key=>$row1){
 
-		//$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);  //wasn't doing anything.  //will be important for subproducts
+		$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);  //wasn't doing anything.  //will be important for subproducts
 
 
 		foreach ($row1 as $key1=>$val1){
@@ -101,10 +101,10 @@ foreach ($skus as $sku){
 
 		//todo: we are still getting all the non-note Values shoved into the $note var
 //		print 'line95';
-//		print_r($note);
+		//print_r($note);
 //		print 'endline95';
 		//	$results[$key]['item_notes_concat'] = '<xmp>'.$note.'</xmp>';
-		$results[$key]['item_notes'] = $note;
+		$results[$key]['item_notes'] = $note ;
 
 	}
 
@@ -150,9 +150,12 @@ foreach ($skus as $sku){
 				$product->appendChild($rp);  //this works!! to put the body
 				//todo: would like a child node instead of just <body>.  Like <item_notes>
 
-
-
-
+//				$node = $newdoc->createElement($k);
+//
+//				//add node Value
+//				$node->nodeValue = $note;
+//				//append child to Product node
+//				$product->appendChild($node);
 
 			}else{
 				//normal parsing for product array
@@ -178,6 +181,7 @@ foreach ($skus as $sku){
 
 }
 
+print 'success';
 
 
 
