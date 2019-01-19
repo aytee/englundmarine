@@ -11,23 +11,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 /* Include the meekro DB class */
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
+require_once __DIR__ . '/includes/englundproducts.class.php';
 DB::$user = 'englund';
 DB::$password = 'englund';
 DB::$dbName = 'englund';
 
-//$results = DB::query("SELECT * FROM view_dw_class");
-////print_r($results);
-//
-//foreach ($results as $row) {
-////	echo "Name: " . $row['name'] . "\n";
-////	echo "Age: " . $row['age'] . "\n";
-////	echo "Height: " . $row['height'] . "\n";
-////	echo "-------------\n";
-//
-////print_R($row);
-////print "<br/>";
-//
-//}
 
 // Create a new DOM document  (XML)
 $newdoc = new DOMDocument;
@@ -37,12 +25,24 @@ $newdoc->formatOutput = true;
 $products = $newdoc->createElement('products');
 $newdoc->appendChild($products);
 
+
+	//Build products list
+	$eproducts = new EnglundProducts();
+	$eproducts->getProductTypeList();
+
+	//holds the product type list array
+	$eproducts->product_type_list;
+	//print_r($eproducts->product_type_list);
+
+
+
 /*General Select */
 //$sku = 'RUL10';
 
 //build a list of skus
 //TODO: Build this list from another query or a some form input
-$skus = array('BLU11001','RUL10');
+//$skus = array('BLU11001','RUL10');
+$skus = array('RUL-BP12V');
 
 //$results = DB::query("SELECT * FROM dw_item WHERE dwin_item_number = %s",$sku);
 ////print_r($results);
@@ -50,11 +50,26 @@ $skus = array('BLU11001','RUL10');
 //cycle through all the skus
 foreach ($skus as $sku){
 
+	$temp_item = $eproducts->product_type_list[$sku];
+
+	if($temp_item['item_type']=='parent'){
+		print "hey, im a parent";
+
+
+	}
+
+	print_R($temp_item);
+
+
+	///////
+
+
 //initialize $note;
 	$note = '';
 
 //this will output a note (aka detailed description) for the product
 //each db row is an individual row of the description.
+	//This builds an array of all the Production descriptions that is referenced further below
 	$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);
 	foreach ($notes as $row) {
 
@@ -83,7 +98,7 @@ foreach ($skus as $sku){
 
 	foreach ($results as $key=>$row1){
 
-		$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);  //wasn't doing anything.  //will be important for subproducts
+		//	$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);  //wasn't doing anything.  //will be important for subproducts
 
 
 		foreach ($row1 as $key1=>$val1){
@@ -113,7 +128,6 @@ foreach ($skus as $sku){
 //	print'blah<pre>';
 //	print_R($results[$key]['item_notes']);
 //	print'</pre>endblah';
-
 
 	foreach($results as $key=>$val){
 //print_r($val);
@@ -181,7 +195,7 @@ foreach ($skus as $sku){
 
 }
 
-print 'success';
+print 'index1-success';
 
 
 
