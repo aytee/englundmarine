@@ -42,23 +42,49 @@ $newdoc->appendChild($products);
 //build a list of skus
 //TODO: Build this list from another query or a some form input
 //$skus = array('BLU11001','RUL10');
-$skus = array('RUL-BP12V');
+$skus = array('RUL-BP12V','RUL37A');
 
 //$results = DB::query("SELECT * FROM dw_item WHERE dwin_item_number = %s",$sku);
 ////print_r($results);
-
+//$temp_items = array();
 //cycle through all the skus
 foreach ($skus as $sku){
 
-	$temp_item = $eproducts->product_type_list[$sku];
+	$temp_item[$sku] = $eproducts->product_type_list[$sku];
 
-	if($temp_item['item_type']=='parent'){
+	//cycle through product array and build array
+
+
+	if($temp_item[$sku]['item_type']=='parent'){
 		print "hey, im a parent";
+		print_r($temp_item[$sku]);
 
+		//if its a parent, loop through and find all the child skus
+		$child_products = array();
+		foreach ($eproducts->product_type_list as $item_sku=>$info){
 
+			if($info['item_type']=='child' && $info['cluster']==$sku){
+				//it's a child, so grab it
+				$child_products[$sku][] = $info['item_number'];
+
+			}
+
+		}
+
+	}elseif($temp_item[$sku]['item_type']=='Regular'){
+		//it's a "regular"
+		print "hey, im a regular";
+		//todo: this doesn't appear correct for regular
+		//$child_products[$sku][] = $info['item_number'];
+
+	}else{
+		//its a child, so ignore it
 	}
 
-	print_R($temp_item);
+//	print_R($temp_item);
+	print '<pre>';
+	print_R($child_products);
+	print '</pre>';
 
 
 	///////
@@ -114,20 +140,11 @@ foreach ($skus as $sku){
 
 		}
 
-		//todo: we are still getting all the non-note Values shoved into the $note var
-//		print 'line95';
-		//print_r($note);
-//		print 'endline95';
-		//	$results[$key]['item_notes_concat'] = '<xmp>'.$note.'</xmp>';
 		$results[$key]['item_notes'] = $note ;
 
 	}
 
 
-
-//	print'blah<pre>';
-//	print_R($results[$key]['item_notes']);
-//	print'</pre>endblah';
 
 	foreach($results as $key=>$val){
 //print_r($val);
@@ -138,6 +155,9 @@ foreach ($skus as $sku){
 		//set the item number as an attribute
 		$product->setAttribute("id", $val['dwin_item_number']);
 		$dwin_item = $val['dwin_item_number'];
+
+		//todo: Add subproducts here
+
 
 		foreach ($val as $k=>$v){
 
