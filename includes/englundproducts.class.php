@@ -3,7 +3,7 @@
 class EnglundProducts {
 
 	public $product_type_list;
-
+	public $product_type_list_solo;
 
 
 	function getProductTypeList(){
@@ -18,13 +18,38 @@ class EnglundProducts {
       LEFT JOIN dw_item AS dw_item_1 ON view_representative_items.dwin_item_number = dw_item_1.dwin_item_number');
 
 		foreach ($list as $row) {
-			$this->product_type_list[$row['item_number']] = array(
-					'item_number'=> $row['item_number'],
-					'cluster'=> $row['cluster'],
-					'item_type'=> $row['item_type'],
+//			$this->product_type_list[$row['item_number']] = array(
+//					'item_number'=> $row['item_number'],
+//					'cluster'=> $row['cluster'],
+//					'item_type'=> $row['item_type'],
+//
+//			);
 
-			);
+			if(is_null($row['cluster'])) {
+			 	//regular product (not a parent/child)
+				//print '<br/>im null:.'.$row['item_number'];
+				$this->product_type_list_solo[$row['item_number']] = array(
+						'item_number'=> $row['item_number'],
+						'cluster'=> $row['cluster'],
+						'item_type'=> $row['item_type'],
 
+				);
+
+
+			}else{
+				//either a parent or child
+			//	$this->product_type_list[$row['cluster']][] = array(
+						$this->product_type_list[$row['item_number']] = array(
+							'item_number'=> $row['item_number'],
+							'cluster'=> $row['cluster'],
+							'item_type'=> $row['item_type'],
+
+				);
+
+
+
+
+			}
 
 			//want to group all the regular items under
 //			if(is_null($row['cluster'])){
@@ -44,10 +69,12 @@ class EnglundProducts {
 		//now loop through the array and group it by cluster
 
 		print '<pre>';
-		print_r($this->product_type_list);
+	//	print_r($this->product_type_list);
 		print '</pre>';
 
-
+		print '<pre>';
+	//	print_r($this->product_type_list_solo);
+		print '</pre>';
 
 
 
