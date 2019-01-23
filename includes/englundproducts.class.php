@@ -38,7 +38,6 @@ class EnglundProducts {
 
 			}else{
 				//either a parent or child
-			//	$this->product_type_list[$row['cluster']][] = array(
 						$this->product_type_list[$row['item_number']] = array(
 							'item_number'=> $row['item_number'],
 							'cluster'=> $row['cluster'],

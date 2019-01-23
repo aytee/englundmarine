@@ -153,14 +153,10 @@ foreach ($skus as $sku){
 		foreach($pdata['children'] as $psid => $subid){
 
 
-			if($subid == 'RUL37A'){
-
-				print 'yep RUL37A test';
-			}
 
 
 			$subproducts_results = DB::query(
-					"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_item_number = %s",$subid);
+					"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$subid);
 
 			foreach ($subproducts_results as $subkey=>$subrow1) {
 
@@ -182,16 +178,16 @@ foreach ($skus as $sku){
 
 	}
 	//todo: take $product_families and run
-	print '<pre>';
-
-	print_R($product_families);
-	print '</pre>';
+//	print '<pre>';
+//
+//	print_R($product_families);
+//	print '</pre>';
 
 
 	//By the time we get here, we have built an entire nested array of products and subproducts
 
 	///////
-
+//
 
 //initialize $note;
 	$note = '';
@@ -199,7 +195,13 @@ foreach ($skus as $sku){
 //this will output a note (aka detailed description) for the product
 //each db row is an individual row of the description.
 	//This builds an array of all the Production descriptions that is referenced further below
-	$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);
+	//must link with the foreign key view_item_notes.mg_group_name = dw_item.dwin_item_number
+	//$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);
+	$notes = DB::query("SELECT dw_item.dwin_display_item_number, view_item_notes.mx_text
+FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_item.dwin_item_number
+WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_display_item_number = %s
+    ORDER BY view_item_notes.mg_group_name, view_item_notes.mx_line_nbr",$sku);
+
 	foreach ($notes as $row) {
 
 		foreach ($row as $key=>$val){
@@ -207,38 +209,22 @@ foreach ($skus as $sku){
 			//add space to end of each line to ensure a space exists between words
 			$note .= $val." ";
 
-			//	print $key.":"  . $val . "<br/>";
-
 		}
 
 	}
 
 
-//<xmp> tags will show raw html in the browser
-//	print 'Raw note:';
-//	print '<xmp>';
-//print_R($note);
-//	print '</xmp>';
-
-//print_R($note);
 	//TODO: get all child products under the product
 	$results = DB::query(
-			"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_item_number = %s",$sku);
+			"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$sku);
 
-
-//view_dw_vendor.dwvm_vendor_name as vendor_name, dwin_item_number as item_number
 
 	//array of items to show
-	$show = array('dwin_item_number','dwvm_vendor_name');
+	$show = array('dwin_display_item_number','dwvm_vendor_name');
 
 
 
 	foreach ($results as $key=>$row1){
-
-
-
-		//	$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);  //wasn't doing anything.  //will be important for subproducts
-
 
 		foreach ($row1 as $key1=>$val1){
 			//concatenate each row's note value
@@ -249,15 +235,12 @@ foreach ($skus as $sku){
 
 			}
 
-			//	print "xx".$key1.":"  . $val1 . "<br/>";
+				//print "xx".$key1.":"  . $val1 . "<br/>";
 
 		}
-
 		$results[$key]['item_notes'] = $note ;
 
 	}
-
-
 
 	foreach($results as $key=>$val){
 	//	print '<br/>'.$key.'::';
@@ -267,10 +250,15 @@ foreach ($skus as $sku){
 
 		$products->appendChild($product);
 		//set the item number as an attribute
-		$product->setAttribute("id", $val['dwin_item_number']);
-		$dwin_item = $val['dwin_item_number'];
+		$product->setAttribute("id", $val['dwin_display_item_number']);
+		$dwin_item = $val['dwin_display_item_number'];
 
+		// item type element
+		$product_item_type = $newdoc->createElement('item_type');
+		$product_item_type->nodeValue = $product_families[$val['dwin_display_item_number']]['type'];
 
+		//append child to Product node
+		$product->appendChild($product_item_type);
 
 
 
@@ -290,7 +278,7 @@ foreach ($skus as $sku){
 				//get the entire <body> tag, which the loadHTML() adds by default
 				$node = $orgdoc->getElementsByTagName("body")->item(0);
 
-				$rp = $product->getAttributeNode($val['dwin_item_number']);
+				$rp = $product->getAttributeNode($val['dwin_display_item_number']);
 				// Import the node, and all its children, to the document
 				$rp = $newdoc->importNode($node, true);
 				// And then append it to the "<product>" node
@@ -343,11 +331,9 @@ foreach ($skus as $sku){
 		//append child to Product node
 		$product->appendChild($children);
 
-		foreach($product_families[$val['dwin_item_number']]['children'] as $pk=>$pv){
-			print 'line339:::';
-			print_r($pv);
+		foreach($product_families[$val['dwin_display_item_number']]['children'] as $pk=>$pv){
 
-			$subprod = $product_families[$val['dwin_item_number']][$pv];
+			$subprod = $product_families[$val['dwin_display_item_number']][$pv];
 
 
 			$childprod = $newdoc->createElement('subproduct');
@@ -359,8 +345,8 @@ foreach ($skus as $sku){
 
 
 			//get query for subproducts
-			$childnode = $newdoc->createElement('dwin_item_number');
-			$childnode->nodeValue = $subprod['dwin_item_number'];
+			$childnode = $newdoc->createElement('dwin_display_item_number');
+			$childnode->nodeValue = $subprod['dwin_display_item_number'];
 			$childprod->appendChild($childnode);
 
 			$description = $newdoc->createElement('description');
