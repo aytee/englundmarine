@@ -67,14 +67,14 @@ class EnglundProducts {
 
 		//now loop through the array and group it by cluster
 
-		print '<pre>';
-	//	print_r($this->product_type_list);
-		print '</pre>';
-
-		print '<pre>';
-	//	print_r($this->product_type_list_solo);
-		print '</pre>';
-
+//		print '<pre>';
+//		print_r($this->product_type_list);
+//		print '</pre>';
+//
+//		print '<pre>';
+//		print_r($this->product_type_list_solo);
+//		print '</pre>';
+//
 
 
 	}

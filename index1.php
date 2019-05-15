@@ -74,7 +74,7 @@ $query = "SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number
 	foreach ($topproducts_results as $topkey=>$toprow) {
 	//print "<br/>".$topkey.":"  . $toprow . "<br/>";
 //print "<pre>";
-//		print_r($toprow);
+	//	print_r($toprow);
 //		print "</pre>";
 
 		//Not sure if this should be 'dwin_display_item_number' or 'dwin_item_number'
@@ -93,20 +93,12 @@ $query = "SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number
 
 
 
-
-
-
-
-
-
-//print_r($skus);
-
 //cycle through all the skus
 foreach ($skus as $sku){
 
 	//cycle through product array and build array
 
-	//is product sku a "regular" item
+	//if product sku is a "regular" item
 	if(array_key_exists($sku, $eproducts->product_type_list_solo)){
 		//print "hey, im a regular:".$sku."<br/>";
 		$product_families[$sku]['type'] = 'regular';
@@ -166,7 +158,7 @@ foreach ($skus as $sku){
 
 
 //	print_R($temp_item);
-	print '<pre>';
+	print '<pre>Prod fam:';
 	print_R($product_families);
 	print '</pre>';
 
@@ -198,6 +190,11 @@ foreach ($skus as $sku){
 
 
 	}
+	reset($product_families);
+	print '<pre>Prod fam193:';
+	print_R($product_families);
+	print '</pre>';
+
 
 	//By the time we get here, we have built an entire nested array of products and subproducts
 
@@ -317,7 +314,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 	$show = array('dwin_display_item_number','dwvm_vendor_name');
 
 
-
+	//Add the 'notes' AKA description to each result array
 	foreach ($results as $key=>$row1){
 
 		foreach ($row1 as $key1=>$val1){
@@ -328,17 +325,33 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				$note .= $val1." ";
 
 			}
-
-			//print "xx".$key1.":"  . $val1 . "<br/>";
-
 		}
 		$results[$key]['item_notes'] = $note ;
-
 	}
 
-	foreach($results as $key=>$val){
-			print '<br/>'.$key.'::';
-			print_r($val);
+
+
+	//cycle through each result array to create an XML node for each Product
+	foreach($results as $key=>$val) {
+		print '<br/>key-' . $key . '::';
+	//	print_r($val);
+		print '<br/>val[dwin_display_item_number]:' . $val['dwin_display_item_number'];
+
+		//only add products for items that have an item_type
+	//	if(isset($product_families[$val['dwin_display_item_number']]['type']) && $product_families[$val['dwin_display_item_number']]['type'] !='child'){
+	//		print 'yeppers im here';
+
+		if(!empty($product_families)){
+			print 'im  an array!';
+
+
+
+//		if(array_key_exists('type',$product_families[$val['dwin_display_item_number']])){
+//					print "<br/>yeppers im here - ";
+//			print_r($product_families[$val['dwin_display_item_number']]);
+
+
+
 		//add parent element
 		$product = $newdoc->createElement('product');
 
@@ -367,17 +380,17 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		//Image
 		$product_image = $newdoc->createElement('image');
 
-		$image_location = "\\ems-fs01\public share\Web\CONTENT\_04 IMAGES LOADED\_01 IMAGES STD\\"."g".$val['dwin_display_item_number'].'.jpg';
+		$image_location = "\\ems-fs01\public share\Web\CONTENT\_04 IMAGES LOADED\_01 IMAGES STD\\" . "g" . $val['dwin_display_item_number'] . '.jpg';
 
 
-		$product_image->setAttribute("href", 'file:\\\\'.$image_location);
+		$product_image->setAttribute("href", 'file:\\\\' . $image_location);
 		$product->appendChild($product_image);
 
-		foreach ($val as $k=>$v){
+		foreach ($val as $k => $v) {
 
 
 			//special parsing for HTML descriptions
-			if($k == 'item_notes' && $v!=''){
+			if ($k == 'item_notes' && $v != '') {
 				//$product->documentElement->appendChild($node);
 
 				$orgdoc = new DOMDocument;
@@ -391,7 +404,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				$rp = $product->getAttributeNode($val['dwin_display_item_number']);
 
 				// Import the node, and all its children, to the document
-				if($node != ''){
+				if ($node != '') {
 					$rp = $newdoc->importNode($node, true);
 					// And then append it to the "<product>" node
 					$product->appendChild($rp);  //this works to put the body bide into product node
@@ -403,21 +416,21 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				$lists = $node->getElementsByTagName('ul');
 
 				//iterate through the <ul> lists and add them to the <product>
-				if($lists->length > 0){
+				if ($lists->length > 0) {
 
 					print'lists::';
 					print_R($lists);
 					print ':end lists';
-					foreach($lists as $list){
+					foreach ($lists as $list) {
 						/* add <ul> items to <product> */
-						$nl = $newdoc->importNode($list,true);
+						$nl = $newdoc->importNode($list, true);
 						//append adds node to the <product>
 						$product->appendChild($nl);
 					}
 
 					//now actually remove the lists
-				//	$lists = $node->getElementsByTagName('ul');
-					if($lists->length > 0) {
+					//	$lists = $node->getElementsByTagName('ul');
+					if ($lists->length > 0) {
 						//set default
 						$lists_to_remove = array();
 
@@ -425,10 +438,10 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 							//make a list of lists to remove (must do it this way)
 							$lists_to_remove[] = $list;
 						}
-						foreach ($lists_to_remove as $key=>$lr) {
+						foreach ($lists_to_remove as $key => $lr) {
 							//print "<br/>list key:".$key;
 							//print_R($lr);
-								$lr->parentNode->removeChild($lr);
+							$lr->parentNode->removeChild($lr);
 
 						}
 
@@ -440,17 +453,17 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				$tables = $node->getElementsByTagName('table');
 
 				//iterate through the <ul> lists and add them to the <product>
-				if($tables->length > 0){
-					foreach($tables as $table){
+				if ($tables->length > 0) {
+					foreach ($tables as $table) {
 
-						if($table->hasAttribute('type')){
+						if ($table->hasAttribute('type')) {
 
 							$tabletype = $table->getAttribute('type');
 
 							/* add <table> items to <product> */
 							//filtering by type=outer in the table wrapper
-							if($tabletype == 'outer'){
-								$nt = $newdoc->importNode($table,true);
+							if ($tabletype == 'outer') {
+								$nt = $newdoc->importNode($table, true);
 								//append adds node to the <product>
 								$product->appendChild($nt);
 
@@ -461,7 +474,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 					}
 
 					//now actually remove the tables
-					if($tables->length > 0) {
+					if ($tables->length > 0) {
 						$tables_to_remove = array();
 
 						foreach ($tables as $table) {
@@ -479,7 +492,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 				/* Strip all div nodes from body */
 				$divs = $node->getElementsByTagName('div');
-				if($divs->length > 0) {
+				if ($divs->length > 0) {
 
 					//set default
 					$divs_to_remove = array();
@@ -499,13 +512,13 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				$newnode = $orgdoc->getElementsByTagName("body")->item(0);
 				$rpnew = $newdoc->importNode($newnode, true);
 				//replace old body node($rp) with new body node($rpnew)
-				$product->replaceChild($rpnew,$rp);
+				$product->replaceChild($rpnew, $rp);
 
 
-			}else{
+			} else {
 				//normal parsing for product array
 				//add DomDocument Nodes
-				if($k != "dwin_display_item_number") {
+				if ($k != "dwin_display_item_number") {
 					//take all values from array and put into XML DomDocument nodes
 					if (in_array($k, $show)) {
 						$node = $newdoc->createElement($k);
@@ -529,10 +542,8 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 			}
 
 
-
 		}
-
-
+	//	}
 		//put subproducts (aka: children) here
 		$children = $newdoc->createElement('children');
 		//add node Value
@@ -576,6 +587,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 		}
 
+		}
 
 
 
