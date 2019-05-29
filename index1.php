@@ -39,6 +39,10 @@ $eproducts->getProductTypeList();
 
 //print_r($eproducts->product_type_list);
 
+//track <class> value so that each time a new one shows up, we add a <class_section></class_section>
+//track <fineline> value so that each time a new one shows up, we add a <fineline_section></fineline_section>
+$current_class = '';
+$current_fineline = '';
 
 
 /*General Select */
@@ -49,7 +53,14 @@ $eproducts->getProductTypeList();
 //$skus = array('BLU11001','RUL10');
 
 
-$query = "SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dw_item.dwin_manufacturer = %s";
+$query = "SELECT * FROM `dw_item` 
+INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` 
+INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
+INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
+INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
+INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
+INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` 
+WHERE dw_item.dwin_manufacturer = %s";
 
 if($_GET['type']=='short'){
 	$skus = array('RUL37A','RUL-BP12V','BLU5063','BLU-ESBS');
@@ -60,7 +71,13 @@ $topid = 'blu';
 	//get all items that have dw_item.manufacturer_id = "BLU"
 }
 if($_GET['type']=='all'){
-$query = "SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` ";
+$query = "SELECT * FROM `dw_item` 
+INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` 
+INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
+INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
+INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
+INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
+INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` ";
 }
 
 
@@ -158,9 +175,9 @@ foreach ($skus as $sku){
 
 
 //	print_R($temp_item);
-	print '<pre>Prod fam:';
-	print_R($product_families);
-	print '</pre>';
+//	print '<pre>Prod fam:';
+//	print_R($product_families);
+//	print '</pre>';
 
 	foreach ($product_families as $pid => $pdata){
 		foreach($pdata['children'] as $psid => $subid){
@@ -169,7 +186,14 @@ foreach ($skus as $sku){
 
 
 			$subproducts_results = DB::query(
-					"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$subid);
+					"SELECT * FROM `dw_item` 
+						INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` 
+						INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
+						INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
+						INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
+						INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
+						INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` 
+						WHERE dwin_display_item_number = %s",$subid);
 
 			foreach ($subproducts_results as $subkey=>$subrow1) {
 
@@ -179,21 +203,16 @@ foreach ($skus as $sku){
 					$product_families[$pid][$subid][$subk]= $subv;
 
 				}
-
-
-
 			}
-
-
 
 		}
 
-
 	}
 	reset($product_families);
-	print '<pre>Prod fam193:';
-	print_R($product_families);
-	print '</pre>';
+
+//	print '<pre>Prod fam193:';
+//	print_R($product_families);
+//	print '</pre>';
 
 
 	//By the time we get here, we have built an entire nested array of products and subproducts
@@ -234,7 +253,9 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		}
 
 	}
-
+	print '<br/>NOTES:<br/>';
+	print_r($note);
+	print '<br/><br/>';
 
 	//start multiple table scenario
 	//todo: count the number of table columns for a table in the $note string
@@ -283,7 +304,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 	//print "<br/>th count:".$th_count;
 
 
-	$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
+	$tgroup_string = "<tgroup><theader cols='".$th_count."' colsep='0'>";
 
 	//for the number of Th counts, add the <colspec>
 	for($x=1; $x<=$th_count;$x++){
@@ -293,17 +314,28 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
  // print "tgroup-yeah". $tgroup_string;
 	//need two table tags per 4/29/19 request
-  $tg_open = '<table type="outer"><table>'.$tgroup_string;
+  $tg_open = '<table type="outer"><table>'.$tgroup_string .'</theader>';
 
   $tg_close = '</tgroup></table></table>';
 
   $note = str_replace('<table>',$tg_open,$note);
 	$note = str_replace('</table>',$tg_close,$note);
 
-  //replace <th> wiht <entry> tags per the "englund-JCD.txt" file example
-	//todo: wait to see if this is really required
-	//$note = str_replace('<th>','<entry>',$note);
-	//$note = str_replace('</th>','</entry>',$note);
+	//replace <tr> with <row>
+	$note = str_replace('<tr','<row', $note);
+	$note = str_replace('</tr','</row', $note);
+
+  //replace <th> and <td> with <entry> tags per the "englund-JCD.txt" file example
+	//extra care to not replace <theader>
+	$note = str_replace('<th ','<entry ',$note);
+	$note = str_replace('</th ','</entry ',$note);
+
+	$note = str_replace('<th>','<entry>',$note);
+	$note = str_replace('</th>','</entry',$note);
+
+	$note = str_replace('<td','<entry',$note);
+	$note = str_replace('</td','</entry',$note);
+
 
 	//Get all child products under the product
 	$results = DB::query(
@@ -311,7 +343,16 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 
 	//array of items to show
-	$show = array('dwin_display_item_number','dwvm_vendor_name');
+	$show = array('dwin_display_item_number','dwvm_vendor_name',
+ 'dwin_department','dwde_dept_name',
+ 'dwin_class', 'dwde_class_name',
+ 'dwin_fineline','dwfi_fineline_name',
+	 'dwin_primary_vendor', 'dwvm_vendor_name',
+	 'dwin_manufacturer'
+);
+//	$show = array();
+
+
 
 
 	//Add the 'notes' AKA description to each result array
@@ -333,24 +374,10 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 	//cycle through each result array to create an XML node for each Product
 	foreach($results as $key=>$val) {
-		print '<br/>key-' . $key . '::';
-	//	print_r($val);
-		print '<br/>val[dwin_display_item_number]:' . $val['dwin_display_item_number'];
 
 		//only add products for items that have an item_type
-	//	if(isset($product_families[$val['dwin_display_item_number']]['type']) && $product_families[$val['dwin_display_item_number']]['type'] !='child'){
-	//		print 'yeppers im here';
-
 		if(!empty($product_families)){
-			print 'im  an array!';
-
-
-
-//		if(array_key_exists('type',$product_families[$val['dwin_display_item_number']])){
-//					print "<br/>yeppers im here - ";
-//			print_r($product_families[$val['dwin_display_item_number']]);
-
-
+		//	print 'im  an array!';
 
 		//add parent element
 		$product = $newdoc->createElement('product');
@@ -369,6 +396,37 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		$product_item_type = $newdoc->createElement('item_type');
 		$product_item_type->nodeValue = $product_families[$val['dwin_display_item_number']]['type'];
 
+		//class section
+		if($val['dwin_class'] != $current_class){
+			$dwin_class_section = $newdoc->createElement('class_section');
+			$dwin_class_section->nodeValue = $val['dwin_class'];
+			$product->appendChild($dwin_class_section);
+
+			//now set the current class value to our existing class in our loop
+			$current_class = $val['dwin_class'];
+
+		}
+
+
+
+		//fineline section
+		if($val['dwin_fineline'] != $current_fineline){
+			$dwin_fineline_section = $newdoc->createElement('fineline_section');
+			$dwin_fineline_section->nodeValue = $val['dwin_fineline'];
+			$product->appendChild($dwin_fineline_section);
+
+			//now set the current class value to our existing class in our loop
+			$current_fineline = $val['dwin_fineline'];
+
+		}
+
+		//logo image for manufacturer
+			$manuf_image = $newdoc->createElement('logo');
+			$logo_location = "ems-fs01/public share/catalog/logos/". $val['dwin_manufacturer']. ".jpg";
+			$manuf_image->setAttribute("href", 'file:///' . $logo_location);
+			$product->appendChild($manuf_image);
+
+
 		//add product description
 		$product_description = $newdoc->createElement('product_description');
 		$product_description->nodeValue = $val['dwin_item_description'];
@@ -380,10 +438,10 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		//Image
 		$product_image = $newdoc->createElement('image');
 
-		$image_location = "\\ems-fs01\public share\Web\CONTENT\_04 IMAGES LOADED\_01 IMAGES STD\\" . "g" . $val['dwin_display_item_number'] . '.jpg';
+		$image_location = "ems-fs01/public share/catalog/images/" . "g" . $val['dwin_display_item_number'] . '.jpg';
 
 
-		$product_image->setAttribute("href", 'file:\\\\' . $image_location);
+		$product_image->setAttribute("href", 'file:///' . $image_location);
 		$product->appendChild($product_image);
 
 		foreach ($val as $k => $v) {
@@ -407,7 +465,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				if ($node != '') {
 					$rp = $newdoc->importNode($node, true);
 					// And then append it to the "<product>" node
-					$product->appendChild($rp);  //this works to put the body bide into product node
+					$product->appendChild($rp);  //this works to put the body node into product node
 				}
 
 				/* Start Lists Move from inside body to outside body*/
@@ -421,6 +479,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 					print'lists::';
 					print_R($lists);
 					print ':end lists';
+
 					foreach ($lists as $list) {
 						/* add <ul> items to <product> */
 						$nl = $newdoc->importNode($list, true);
