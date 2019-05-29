@@ -3,8 +3,14 @@
 .idea/
 .idea/*
 
-/*ignore vendor packages installed by Composer*/
-//vendor/
+/* Ignore vendor packages installed by Composer */
+//vendor/    //include vendor so Englund can pull down all files
+
+
+/* Ignore generated XML files */
 englund.xml
 englund1.xml
 englund*.xml
+
+/* Settings file */
+settings.php

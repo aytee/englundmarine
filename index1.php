@@ -9,12 +9,16 @@
 /*Composer autoload*/
 require __DIR__ . '/vendor/autoload.php';
 
+include __DIR__ . '/settings.php';
+
 /* Include the meekro DB class */
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
 require_once __DIR__ . '/includes/englundproducts.class.php';
-DB::$user = 'englund';
-DB::$password = 'englund';
-DB::$dbName = 'englund';
+
+
+DB::$user = $db_name;
+DB::$password = $db_user;
+DB::$dbName = $db_password;
 
 
 
