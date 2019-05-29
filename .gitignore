@@ -4,7 +4,7 @@
 .idea/*
 
 /*ignore vendor packages installed by Composer*/
-vendor/
+//vendor/
 englund.xml
 englund1.xml
 englund*.xml

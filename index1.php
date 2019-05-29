@@ -312,7 +312,6 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 	}
 	//$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
 
- // print "tgroup-yeah". $tgroup_string;
 	//need two table tags per 4/29/19 request
   $tg_open = '<table type="outer"><table>'.$tgroup_string .'</theader>';
 
