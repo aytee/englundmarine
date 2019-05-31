@@ -15,12 +15,15 @@ if(file_exists('../permanent/settings.php')){
 
 /* Include the meekro DB class */
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
-DB::$user = $db_name;
-DB::$password = $db_user;
-DB::$dbName = $db_password;
+DB::$dbName = $db_name;   //database name
+DB::$user = $db_user;     //user name
+DB::$password = $db_password;   //user password
+DB::$port = $dp_port;   //usually 3306
+DB::$host = $db_host;  //IP or localhost
 
 //get list of departments
-$query = 'SELECT * FROM view_dw_department';
+
+$query = 'SELECT * FROM view_dw_department WHERE view_dw_department.dwde_store_number="1"  ';
 
 $dept_list = DB::query($query);
 
