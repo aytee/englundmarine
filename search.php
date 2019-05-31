@@ -6,6 +6,16 @@
  * Time: 11:30 AM
  */
 
+//set PHP error reporting
+// Report simple running errors
+//error_reporting(E_ERROR | E_WARNING | E_PARSE);
+
+error_reporting(E_ERROR | E_PARSE);
+
+// Report all errors except E_NOTICE
+//error_reporting(E_ALL & ~E_NOTICE);
+
+
 /*Composer autoload*/
 require __DIR__ . '/vendor/autoload.php';
 
@@ -27,6 +37,27 @@ DB::$password = $db_password;   //user password
 DB::$port = $dp_port;   //usually 3306
 DB::$host = $db_host;  //IP or localhost
 
+//filter the input just in case somebody gets access to this and wants to do something nefarious
+//add new $_GET args here
+$args = array(
+		'department' => FILTER_SANITIZE_STRING,
+		'type' => FILTER_SANITIZE_STRING,
+);
+
+//use the $clean array for all the sanitized $_GET values
+$clean = filter_input_array(INPUT_GET,$args);
+
+
+//Build products list
+$eproducts = new EnglundProducts();
+
+
+
+//print_r($clean);
+$eproducts->department = $clean['department'];
+
+
+
 
 // Create a new DOM document  (XML)
 $newdoc = new DOMDocument;
@@ -36,10 +67,13 @@ $newdoc->formatOutput = true;
 $products = $newdoc->createElement('products');
 $newdoc->appendChild($products);
 
-
-//Build products list
-$eproducts = new EnglundProducts();
+//get Product Type List
 $eproducts->getProductTypeList();
+
+
+
+
+
 
 //holds the product type list array of parent / child products
 //$eproducts->product_type_list;
@@ -81,40 +115,21 @@ $topid = 'blu';
 	//get all items that have dw_item.manufacturer_id = "BLU"
 }
 if($_GET['type']=='all'){
-$query = "SELECT * FROM `dw_item` 
-INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
-INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
-INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
-INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
-INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
-INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` ";
+	$query = "SELECT * FROM `dw_item` 
+		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
+		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
+		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
+		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
+		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
+		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` ";
 }
 
-
-
-
-	$topproducts_results = DB::query(
-			$query,$topid
-
-	);
+	$topproducts_results = DB::query($query,$topid);
 
 	foreach ($topproducts_results as $topkey=>$toprow) {
-	//print "<br/>".$topkey.":"  . $toprow . "<br/>";
-//print "<pre>";
-	//	print_r($toprow);
-//		print "</pre>";
 
 		//Not sure if this should be 'dwin_display_item_number' or 'dwin_item_number'
 		$skus[] = $toprow['dwin_display_item_number'];
-
-		//		foreach($toprow as $topk =>$topv){
-//			//	print "<br/>".$subk.":"  . $subv . "<br/>";
-//			//$product_families[$pid]['children'][$psid][$subk]= (string)$subv;
-//		//	$product_families[$pid][$subid][$subk]= $subv;
-//
-//		}
-
-
 
 	}
 
@@ -130,7 +145,6 @@ foreach ($skus as $sku){
 		//print "hey, im a regular:".$sku."<br/>";
 		$product_families[$sku]['type'] = 'regular';
 		$product_families[$sku]['children'][]= $sku;  //should only ever be a single child for 'regular' item
-		//	print_r( $eproducts->product_type_list_solo[$sku]);
 
 	}else{
 		//product is a child or parent
@@ -263,9 +277,9 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		}
 
 	}
-	print '<br/>NOTES:<br/>';
-	print_r($note);
-	print '<br/><br/>';
+//	print '<br/>NOTES:<br/>';
+//	print_r($note);
+//	print '<br/><br/>';
 
 	//start multiple table scenario
 	//todo: count the number of table columns for a table in the $note string
@@ -351,16 +365,18 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 			"SELECT * FROM `dw_item` INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$sku);
 
 
-	//array of items to show
+	//array of fields  to show on the XML output.
+	//These are the fields that we really care about!
 	$show = array('dwin_display_item_number','dwvm_vendor_name',
  'dwin_department','dwde_dept_name',
- 'dwin_class', 'dwde_class_name',
+ 'dwin_class', 'dwcl_class_name',
  'dwin_fineline','dwfi_fineline_name',
 	 'dwin_primary_vendor', 'dwvm_vendor_name',
-	 'dwin_manufacturer'
+	 'dwin_manufacturer',
+			'dwin_code_c2','in_catalogue_page'  //catalog related fields
 );
 //	$show = array();
-
+//print_r($show);
 
 
 
@@ -406,26 +422,26 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		$product_item_type->nodeValue = $product_families[$val['dwin_display_item_number']]['type'];
 
 		//class section
-		if($val['dwin_class'] != $current_class){
+		if($val['dwcl_class_name'] != $current_class){
 			$dwin_class_section = $newdoc->createElement('class_section');
-			$dwin_class_section->nodeValue = $val['dwin_class'];
+			$dwin_class_section->nodeValue = $val['dwcl_class_name'];
 			$product->appendChild($dwin_class_section);
 
 			//now set the current class value to our existing class in our loop
-			$current_class = $val['dwin_class'];
+			$current_class = $val['dwcl_class_name'];
 
 		}
 
 
 
 		//fineline section
-		if($val['dwin_fineline'] != $current_fineline){
+		if($val['dwfi_fineline_name'] != $current_fineline){
 			$dwin_fineline_section = $newdoc->createElement('fineline_section');
-			$dwin_fineline_section->nodeValue = $val['dwin_fineline'];
+			$dwin_fineline_section->nodeValue = $val['dwfi_fineline_name'];
 			$product->appendChild($dwin_fineline_section);
 
-			//now set the current class value to our existing class in our loop
-			$current_fineline = $val['dwin_fineline'];
+			//now set the current fineline value to our existing fineline in our loop
+			$current_fineline = $val['dwfi_fineline_name'];
 
 		}
 
@@ -485,9 +501,9 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 				//iterate through the <ul> lists and add them to the <product>
 				if ($lists->length > 0) {
 
-					print'lists::';
-					print_R($lists);
-					print ':end lists';
+//					print'lists::';
+//					print_R($lists);
+//					print ':end lists';
 
 					foreach ($lists as $list) {
 						/* add <ul> items to <product> */
@@ -615,7 +631,6 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 		//put subproducts (aka: children) here
 		$children = $newdoc->createElement('children');
 		//add node Value
-		//	$children->nodeValue = "whoa";
 
 		//append child to Product node
 		$product->appendChild($children);
@@ -661,19 +676,26 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 	}
 
-	//Save does work
-	$filename = 'englund.xml';
-
-	if(isset($_GET['type'])){
-		$filename = '../catalog_xml/englund_'.$_GET["type"].'.xml';
-
-
-	}
-	$newdoc->save($filename);
 
 }
 
-//print 'index1-success';
+//Save does work
+$filename = 'englund.xml';
+
+if(isset($clean['type'])){
+	$filename = '../catalog_xml/englund_'.$clean["type"].'.xml';
+
+
+}
+
+if($newdoc->save($filename)){
+	print '<br/><br/><strong>Generated file saved as '. $filename .'</strong>';
+
+}
+
+
+
+
 
 
 function get_string_between($string, $start, $end){

@@ -1,6 +1,7 @@
 <?php
 
 
+
 //include the settings file or throw a notice
 if(file_exists('../permanent/settings.php')){
 	include '../permanent/settings.php';
@@ -8,6 +9,8 @@ if(file_exists('../permanent/settings.php')){
     print "<strong>You are missing the settings.php file in the /permanent directory</strong>";
 
 }
+
+
 
 
 /* Include the meekro DB class */
@@ -19,9 +22,8 @@ DB::$dbName = $db_password;
 //get list of departments
 $query = 'SELECT * FROM view_dw_department';
 
-$list = DB::query($query);
+$dept_list = DB::query($query);
 
-print_r($list);
 
 
 
@@ -40,14 +42,15 @@ print_r($list);
         <p><a href="search.php?type=blu">Items = "BLU"</a> </p>
         <p><a href="search.php?type=all">All items</a> </p>
 
-
-        /////
-        <p>Or Select your Department</p>
-        <form>
+        <div style="background-color:lightgrey; padding:10px;">
+        <h2>Or Select your Department</h2>
+        <form action="search.php" method="get">
+            Department:
             <select name = "department">
+              <option value="" selected>-- Please select one --</option>
               <?php
               //output option list of departments
-              foreach($list as $key=>$value){
+              foreach($dept_list as $key=>$value){
                   $dept_name = $value['dwde_dept_name'];
                   $dept_code = $value['dwde_department'];
 
@@ -56,12 +59,28 @@ print_r($list);
               ?>
 
 
+            </select><br/><br/>
+
+            <p>Search Type:
+
+            <select name="type">
+                <option value="all" selected>All Products</option>
+                <option value="short" >Just the Four Items</option>
+                <option value="blue" >Items = 'BLU'</option>
+
             </select>
 
+            </p>
+
+
+
+
+
+            <input type="submit" value="Submit"/>
 
         </form>
 
-
+        </div>
 	</body>
 
 
