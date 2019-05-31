@@ -9,17 +9,23 @@
 /*Composer autoload*/
 require __DIR__ . '/vendor/autoload.php';
 
-include __DIR__ . '/settings.php';
+if(file_exists('../permanent/settings.php')){
+	include '../permanent/settings.php';
+}else{
+	print "<strong>You are missing the settings.php file in the /permanent directory</strong>";
+
+}
 
 /* Include the meekro DB class */
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
 require_once __DIR__ . '/includes/englundproducts.class.php';
 
-
-DB::$user = $db_name;
-DB::$password = $db_user;
-DB::$dbName = $db_password;
-
+//add DB credentials from the settings.php file
+DB::$dbName = $db_name;   //database name
+DB::$user = $db_user;     //user name
+DB::$password = $db_password;   //user password
+DB::$port = $dp_port;   //usually 3306
+DB::$host = $db_host;  //IP or localhost
 
 
 // Create a new DOM document  (XML)
@@ -58,7 +64,7 @@ $current_fineline = '';
 
 
 $query = "SELECT * FROM `dw_item` 
-INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` 
+INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
 INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
 INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
 INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
@@ -76,7 +82,7 @@ $topid = 'blu';
 }
 if($_GET['type']=='all'){
 $query = "SELECT * FROM `dw_item` 
-INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` 
+INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
 INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
 INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
 INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
@@ -191,7 +197,7 @@ foreach ($skus as $sku){
 
 			$subproducts_results = DB::query(
 					"SELECT * FROM `dw_item` 
-						INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` 
+						INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
 						INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
 						INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
 						INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
@@ -342,7 +348,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 	//Get all child products under the product
 	$results = DB::query(
-			"SELECT * FROM `dw_item` INNER JOIN `in` ON `dw_item`.`dwin_item_number`=`in`.`in_item_number` AND `dw_item`.`dwin_store`=`in`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$sku);
+			"SELECT * FROM `dw_item` INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$sku);
 
 
 	//array of items to show
@@ -659,7 +665,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 	$filename = 'englund.xml';
 
 	if(isset($_GET['type'])){
-		$filename = 'englund_'.$_GET["type"].'.xml';
+		$filename = '../catalog_xml/englund_'.$_GET["type"].'.xml';
 
 
 	}
@@ -667,7 +673,7 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 }
 
-print 'index1-success';
+//print 'index1-success';
 
 
 function get_string_between($string, $start, $end){
