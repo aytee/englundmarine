@@ -71,10 +71,6 @@ $newdoc->appendChild($products);
 $eproducts->getProductTypeList();
 
 
-
-
-
-
 //holds the product type list array of parent / child products
 //$eproducts->product_type_list;
 
@@ -97,41 +93,47 @@ $current_fineline = '';
 //$skus = array('BLU11001','RUL10');
 
 
-$query = "SELECT * FROM `dw_item` 
-INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
-INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
-INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
-INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
-INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
-INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` 
-WHERE dw_item.dwin_manufacturer = %s";
+$query = 'SELECT * FROM `dw_item` 
+INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
+INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
+WHERE dw_item.dwin_manufacturer = %s ';
 
 if($_GET['type']=='short'){
 	$skus = array('RUL37A','RUL-BP12V','BLU5063','BLU-ESBS');
 
 }
 if($_GET['type']=='blu'){
-$topid = 'blu';
+	$topid = 'blu';
 	//get all items that have dw_item.manufacturer_id = "BLU"
 }
+
+//JEREMY ADDED THE ORDER BY....NOT SURE WHICH QUERY IT NEEDS TO GO IN
+
 if($_GET['type']=='all'){
-	$query = "SELECT * FROM `dw_item` 
-		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
-		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
-		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
-		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
-		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
-		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` ";
+	$query = 'SELECT * FROM `dw_item` 
+		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	AND `dw_item`.`dwin_department`="CT"
+		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1 
+		ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
+
+
 }
 
-	$topproducts_results = DB::query($query,$topid);
+$topproducts_results = DB::query($query,$topid);
 
-	foreach ($topproducts_results as $topkey=>$toprow) {
+foreach ($topproducts_results as $topkey=>$toprow) {
 
-		//Not sure if this should be 'dwin_display_item_number' or 'dwin_item_number'
-		$skus[] = $toprow['dwin_display_item_number'];
+	//Not sure if this should be 'dwin_display_item_number' or 'dwin_item_number'
+	$skus[] = $toprow['dwin_display_item_number'];
 
-	}
+}
 
 
 
@@ -208,16 +210,15 @@ foreach ($skus as $sku){
 
 
 
-
 			$subproducts_results = DB::query(
-					"SELECT * FROM `dw_item` 
-						INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` 
-						INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` 
-						INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` 
-						INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`
-						INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`
-						INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` 
-						WHERE dwin_display_item_number = %s",$subid);
+					'SELECT * FROM `dw_item` 
+						INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store`  AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
+						INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department`  AND `view_dw_department`.`dwde_store_number`=1
+						INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class`  AND `view_dw_class`.`dwcl_store`=1
+						INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+						INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+						INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1 
+						WHERE dwin_display_item_number = %s ',$subid);
 
 			foreach ($subproducts_results as $subkey=>$subrow1) {
 
@@ -263,10 +264,9 @@ foreach ($skus as $sku){
 //    ORDER BY view_item_notes.mg_group_name, view_item_notes.mx_line_nbr",$sku);
 //
 
-	$notes = DB::query("SELECT view_item_notes.mx_text
-FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_item.dwin_item_number
-WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_display_item_number = %s
-    ORDER BY view_item_notes.mg_group_name, view_item_notes.mx_line_nbr",$sku);
+	$notes = DB::query('SELECT view_item_notes.mx_text
+FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_item.dwin_item_number AND view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_display_item_number = %s 
+    ORDER BY view_item_notes.mg_group_name, view_item_notes.mx_line_nbr',$sku);
 	foreach ($notes as $row) {
 
 		foreach ($row as $key=>$val){
@@ -328,7 +328,8 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 	//print "<br/>th count:".$th_count;
 
 
-	$tgroup_string = "<tgroup><theader cols='".$th_count."' colsep='0'>";
+	$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
+	//JCD $tgroup_string = "<tgroup><theader cols='".$th_count."' colsep='0'>";
 
 	//for the number of Th counts, add the <colspec>
 	for($x=1; $x<=$th_count;$x++){
@@ -337,44 +338,56 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 	//$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
 
 	//need two table tags per 4/29/19 request
-  $tg_open = '<table type="outer"><table>'.$tgroup_string .'</theader>';
 
-  $tg_close = '</tgroup></table></table>';
+	$tg_open = '<table type="outer"><table>'.$tgroup_string;
+//JCD  $tg_open = '<table type="outer"><table>'.$tgroup_string .'</theader>';
 
-  $note = str_replace('<table>',$tg_open,$note);
+
+	$tg_close = '</tgroup></table></table>';
+
+	$note = str_replace('<table>',$tg_open,$note);
 	$note = str_replace('</table>',$tg_close,$note);
 
+	//JCD  more find replace to fix table format  **can find </th>\n*</tr>**
+//	$note = str_replace('<tbody>','<thead>', $note);
+	//$note = str_replace('</th>\\s*\\n*\\s*</tr>','</th></tr></thead><tbody>', $note);
+
 	//replace <tr> with <row>
-	$note = str_replace('<tr','<row', $note);
-	$note = str_replace('</tr','</row', $note);
+//	$note = str_replace('<tr','<row', $note);
+	//$note = str_replace('</tr','</row', $note);
 
-  //replace <th> and <td> with <entry> tags per the "englund-JCD.txt" file example
+	//replace <th> and <td> with <entry> tags per the "englund-JCD.txt" file example
 	//extra care to not replace <theader>
-	$note = str_replace('<th ','<entry ',$note);
-	$note = str_replace('</th ','</entry ',$note);
+	//$note = str_replace('<th ','<entry ',$note);
+	//$note = str_replace('</th ','</entry ',$note);
 
-	$note = str_replace('<th>','<entry>',$note);
-	$note = str_replace('</th>','</entry',$note);
+	//$note = str_replace('<th>','<entry>',$note);
+	//$note = str_replace('</th>','</entry',$note);
 
-	$note = str_replace('<td','<entry',$note);
-	$note = str_replace('</td','</entry',$note);
+	//$note = str_replace('<td','<entry',$note);
+	//$note = str_replace('</td','</entry',$note);
 
-
-	//Get all child products under the product
+//Get all child products under the product
 	$results = DB::query(
-			"SELECT * FROM `dw_item` INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code`INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code`INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` WHERE dwin_display_item_number = %s",$sku);
+			'SELECT * FROM `dw_item` INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
+			INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+			INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1 
+			INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+			INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+			INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1 
+			WHERE dwin_display_item_number = %s',$sku);
 
 
 	//array of fields  to show on the XML output.
 	//These are the fields that we really care about!
 	$show = array('dwin_display_item_number','dwvm_vendor_name',
- 'dwin_department','dwde_dept_name',
- 'dwin_class', 'dwcl_class_name',
- 'dwin_fineline','dwfi_fineline_name',
-	 'dwin_primary_vendor', 'dwvm_vendor_name',
-	 'dwin_manufacturer',
+			'dwin_department','dwde_dept_name',
+			'dwin_class', 'dwcl_class_name',
+			'dwin_fineline','dwfi_fineline_name',
+			'dwin_primary_vendor', 'dwvm_vendor_name',
+			'dwin_manufacturer',
 			'dwin_code_c2','in_catalogue_page'  //catalog related fields
-);
+	);
 //	$show = array();
 //print_r($show);
 
@@ -402,219 +415,219 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 
 		//only add products for items that have an item_type
 		if(!empty($product_families)){
-		//	print 'im  an array!';
+			//	print 'im  an array!';
 
-		//add parent element
-		$product = $newdoc->createElement('product');
+			//add parent element
+			$product = $newdoc->createElement('product');
 
-		//rename dwin_display_item_number to product_name
-		$product_name = $newdoc->createElement('product_name');
-		$product_name->nodeValue = $val['dwin_display_item_number'];
-		$product->appendChild($product_name);
+			//rename dwin_display_item_number to product_name
+			$product_name = $newdoc->createElement('product_name');
+			$product_name->nodeValue = $val['dwin_display_item_number'];
+			$product->appendChild($product_name);
 
-		$products->appendChild($product);
-		//set the item number as an attribute
-		$product->setAttribute("id", $val['dwin_display_item_number']);
-		//$dwin_item = $val['dwin_display_item_number'];
+			$products->appendChild($product);
+			//set the item number as an attribute
+			$product->setAttribute("id", $val['dwin_display_item_number']);
+			//$dwin_item = $val['dwin_display_item_number'];
 
-		// item type element
-		$product_item_type = $newdoc->createElement('item_type');
-		$product_item_type->nodeValue = $product_families[$val['dwin_display_item_number']]['type'];
+			// item type element
+			$product_item_type = $newdoc->createElement('item_type');
+			$product_item_type->nodeValue = $product_families[$val['dwin_display_item_number']]['type'];
 
-		//class section
-		if($val['dwcl_class_name'] != $current_class){
-			$dwin_class_section = $newdoc->createElement('class_section');
-			$dwin_class_section->nodeValue = $val['dwcl_class_name'];
-			$product->appendChild($dwin_class_section);
+			//class section
+			if($val['dwcl_class_name'] != $current_class){
+				$dwin_class_section = $newdoc->createElement('class_section');
+				$dwin_class_section->nodeValue = $val['dwcl_class_name'];
+				$product->appendChild($dwin_class_section);
 
-			//now set the current class value to our existing class in our loop
-			$current_class = $val['dwcl_class_name'];
+				//now set the current class value to our existing class in our loop
+				$current_class = $val['dwcl_class_name'];
 
-		}
+			}
 
 
 
-		//fineline section
-		if($val['dwfi_fineline_name'] != $current_fineline){
-			$dwin_fineline_section = $newdoc->createElement('fineline_section');
-			$dwin_fineline_section->nodeValue = $val['dwfi_fineline_name'];
-			$product->appendChild($dwin_fineline_section);
+			//fineline section
+			if($val['dwfi_fineline_name'] != $current_fineline){
+				$dwin_fineline_section = $newdoc->createElement('fineline_section');
+				$dwin_fineline_section->nodeValue = $val['dwfi_fineline_name'];
+				$product->appendChild($dwin_fineline_section);
 
-			//now set the current fineline value to our existing fineline in our loop
-			$current_fineline = $val['dwfi_fineline_name'];
+				//now set the current fineline value to our existing fineline in our loop
+				$current_fineline = $val['dwfi_fineline_name'];
 
-		}
+			}
 
-		//logo image for manufacturer
+			//logo image for manufacturer
 			$manuf_image = $newdoc->createElement('logo');
 			$logo_location = "ems-fs01/public share/catalog/logos/". $val['dwin_manufacturer']. ".jpg";
 			$manuf_image->setAttribute("href", 'file:///' . $logo_location);
 			$product->appendChild($manuf_image);
 
 
-		//add product description
-		$product_description = $newdoc->createElement('product_description');
-		$product_description->nodeValue = $val['dwin_item_description'];
-		$product->appendChild($product_description);
+			//add product description
+			$product_description = $newdoc->createElement('product_description');
+			$product_description->nodeValue = $val['dwin_item_description'];
+			$product->appendChild($product_description);
 
-		//append child to Product node
-		$product->appendChild($product_item_type);
+			//append child to Product node
+			$product->appendChild($product_item_type);
 
-		//Image
-		$product_image = $newdoc->createElement('image');
+			//Image
+			$product_image = $newdoc->createElement('image');
 
-		$image_location = "ems-fs01/public share/catalog/images/" . "g" . $val['dwin_display_item_number'] . '.jpg';
-
-
-		$product_image->setAttribute("href", 'file:///' . $image_location);
-		$product->appendChild($product_image);
-
-		foreach ($val as $k => $v) {
+			$image_location = "ems-fs01/public share/catalog/images/" . "g" . $val['dwin_display_item_number'] . '.jpg';
 
 
-			//special parsing for HTML descriptions
-			if ($k == 'item_notes' && $v != '') {
-				//$product->documentElement->appendChild($node);
+			$product_image->setAttribute("href", 'file:///' . $image_location);
+			$product->appendChild($product_image);
 
-				$orgdoc = new DOMDocument;
-				//load html string
-				$orgdoc->loadHTML($v);
+			foreach ($val as $k => $v) {
 
-				// The node we want to import to a new document
-				//get the entire <body> tag, which the loadHTML() adds by default
-				$node = $orgdoc->getElementsByTagName("body")->item(0);
 
-				$rp = $product->getAttributeNode($val['dwin_display_item_number']);
+				//special parsing for HTML descriptions
+				if ($k == 'item_notes' && $v != '') {
+					//$product->documentElement->appendChild($node);
 
-				// Import the node, and all its children, to the document
-				if ($node != '') {
-					$rp = $newdoc->importNode($node, true);
-					// And then append it to the "<product>" node
-					$product->appendChild($rp);  //this works to put the body node into product node
-				}
+					$orgdoc = new DOMDocument;
+					//load html string
+					$orgdoc->loadHTML($v);
 
-				/* Start Lists Move from inside body to outside body*/
-				//identify the <ul> lists in the <body>
-				//get all the <ul> elements
-				$lists = $node->getElementsByTagName('ul');
+					// The node we want to import to a new document
+					//get the entire <body> tag, which the loadHTML() adds by default
+					$node = $orgdoc->getElementsByTagName("body")->item(0);
 
-				//iterate through the <ul> lists and add them to the <product>
-				if ($lists->length > 0) {
+					$rp = $product->getAttributeNode($val['dwin_display_item_number']);
+
+					// Import the node, and all its children, to the document
+					if ($node != '') {
+						$rp = $newdoc->importNode($node, true);
+						// And then append it to the "<product>" node
+						$product->appendChild($rp);  //this works to put the body node into product node
+					}
+
+					/* Start Lists Move from inside body to outside body*/
+					//identify the <ul> lists in the <body>
+					//get all the <ul> elements
+					$lists = $node->getElementsByTagName('ul');
+
+					//iterate through the <ul> lists and add them to the <product>
+					if ($lists->length > 0) {
 
 //					print'lists::';
 //					print_R($lists);
 //					print ':end lists';
 
-					foreach ($lists as $list) {
-						/* add <ul> items to <product> */
-						$nl = $newdoc->importNode($list, true);
-						//append adds node to the <product>
-						$product->appendChild($nl);
-					}
-
-					//now actually remove the lists
-					//	$lists = $node->getElementsByTagName('ul');
-					if ($lists->length > 0) {
-						//set default
-						$lists_to_remove = array();
-
 						foreach ($lists as $list) {
-							//make a list of lists to remove (must do it this way)
-							$lists_to_remove[] = $list;
-						}
-						foreach ($lists_to_remove as $key => $lr) {
-							//print "<br/>list key:".$key;
-							//print_R($lr);
-							$lr->parentNode->removeChild($lr);
-
+							/* add <ul> items to <product> */
+							$nl = $newdoc->importNode($list, true);
+							//append adds node to the <product>
+							$product->appendChild($nl);
 						}
 
+						//now actually remove the lists
+						//	$lists = $node->getElementsByTagName('ul');
+						if ($lists->length > 0) {
+							//set default
+							$lists_to_remove = array();
+
+							foreach ($lists as $list) {
+								//make a list of lists to remove (must do it this way)
+								$lists_to_remove[] = $list;
+							}
+							foreach ($lists_to_remove as $key => $lr) {
+								//print "<br/>list key:".$key;
+								//print_R($lr);
+								$lr->parentNode->removeChild($lr);
+
+							}
+
+						}
 					}
-				}
-				/* End get all lists */
+					/* End get all lists */
 
-				/*Get all tables in body and move them outside of body node*/
-				$tables = $node->getElementsByTagName('table');
+					/*Get all tables in body and move them outside of body node*/
+					$tables = $node->getElementsByTagName('table');
 
-				//iterate through the <ul> lists and add them to the <product>
-				if ($tables->length > 0) {
-					foreach ($tables as $table) {
+					//iterate through the <ul> lists and add them to the <product>
+					if ($tables->length > 0) {
+						foreach ($tables as $table) {
 
-						if ($table->hasAttribute('type')) {
+							if ($table->hasAttribute('type')) {
 
-							$tabletype = $table->getAttribute('type');
+								$tabletype = $table->getAttribute('type');
 
-							/* add <table> items to <product> */
-							//filtering by type=outer in the table wrapper
-							if ($tabletype == 'outer') {
-								$nt = $newdoc->importNode($table, true);
-								//append adds node to the <product>
-								$product->appendChild($nt);
+								/* add <table> items to <product> */
+								//filtering by type=outer in the table wrapper
+								if ($tabletype == 'outer') {
+									$nt = $newdoc->importNode($table, true);
+									//append adds node to the <product>
+									$product->appendChild($nt);
+
+								}
 
 							}
 
 						}
 
-					}
+						//now actually remove the tables
+						if ($tables->length > 0) {
+							$tables_to_remove = array();
 
-					//now actually remove the tables
-					if ($tables->length > 0) {
-						$tables_to_remove = array();
+							foreach ($tables as $table) {
+								//make a list of tables to remove (must do it this way)
+								$tables_to_remove[] = $table;
+							}
+							foreach ($tables_to_remove as $tr) {
+								$tr->parentNode->removeChild($tr);
+							}
 
-						foreach ($tables as $table) {
-							//make a list of tables to remove (must do it this way)
-							$tables_to_remove[] = $table;
 						}
-						foreach ($tables_to_remove as $tr) {
-							$tr->parentNode->removeChild($tr);
+					}
+					/* End get all tables from body node */
+
+
+					/* Strip all div nodes from body */
+					$divs = $node->getElementsByTagName('div');
+					if ($divs->length > 0) {
+
+						//set default
+						$divs_to_remove = array();
+
+						foreach ($divs as $div) {
+							$divs_to_remove[] = $div;
+						}
+						foreach ($divs_to_remove as $dr) {
+							$dr->parentNode->removeChild($dr);
 						}
 
 					}
-				}
-				/* End get all tables from body node */
+					/* end div node removal from body */
+
+					//need to replace old body node with new body node
+					//get the new version of the body after we've stripped out <ul> and <table> and <div> nodes
+					$newnode = $orgdoc->getElementsByTagName("body")->item(0);
+					$rpnew = $newdoc->importNode($newnode, true);
+					//replace old body node($rp) with new body node($rpnew)
+					$product->replaceChild($rpnew, $rp);
 
 
-				/* Strip all div nodes from body */
-				$divs = $node->getElementsByTagName('div');
-				if ($divs->length > 0) {
+				} else {
+					//normal parsing for product array
+					//add DomDocument Nodes
+					if ($k != "dwin_display_item_number") {
+						//take all values from array and put into XML DomDocument nodes
+						if (in_array($k, $show)) {
+							$node = $newdoc->createElement($k);
+							//add node Value
+							$node->nodeValue = $v;
 
-					//set default
-					$divs_to_remove = array();
+							//append child to Product node
+							$product->appendChild($node);
 
-					foreach ($divs as $div) {
-						$divs_to_remove[] = $div;
-					}
-					foreach ($divs_to_remove as $dr) {
-						$dr->parentNode->removeChild($dr);
-					}
-
-				}
-				/* end div node removal from body */
-
-				//need to replace old body node with new body node
-				//get the new version of the body after we've stripped out <ul> and <table> and <div> nodes
-				$newnode = $orgdoc->getElementsByTagName("body")->item(0);
-				$rpnew = $newdoc->importNode($newnode, true);
-				//replace old body node($rp) with new body node($rpnew)
-				$product->replaceChild($rpnew, $rp);
-
-
-			} else {
-				//normal parsing for product array
-				//add DomDocument Nodes
-				if ($k != "dwin_display_item_number") {
-					//take all values from array and put into XML DomDocument nodes
-					if (in_array($k, $show)) {
-						$node = $newdoc->createElement($k);
-						//add node Value
-						$node->nodeValue = $v;
-
-						//append child to Product node
-						$product->appendChild($node);
+						}
 
 					}
-
-				}
 //				$node = $newdoc->createElement($k);
 //				//add node Value
 //				$node->nodeValue = $v;
@@ -623,52 +636,52 @@ WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_dis
 //				$product->appendChild($node);
 
 
+				}
+
+
 			}
+			//	}
+			//put subproducts (aka: children) here
+			$children = $newdoc->createElement('children');
+			//add node Value
+
+			//append child to Product node
+			$product->appendChild($children);
+
+			foreach($product_families[$val['dwin_display_item_number']]['children'] as $pk=>$pv){
+
+				$subprod = $product_families[$val['dwin_display_item_number']][$pv];
 
 
-		}
-	//	}
-		//put subproducts (aka: children) here
-		$children = $newdoc->createElement('children');
-		//add node Value
+				$childprod = $newdoc->createElement('subproduct');
+				//shoudl be attribute
+				$childprod->setAttribute("id", $pv);
 
-		//append child to Product node
-		$product->appendChild($children);
-
-		foreach($product_families[$val['dwin_display_item_number']]['children'] as $pk=>$pv){
-
-			$subprod = $product_families[$val['dwin_display_item_number']][$pv];
+				//$childprod->nodeValue = $pv;
+				$children->appendChild($childprod);
 
 
-			$childprod = $newdoc->createElement('subproduct');
-			//shoudl be attribute
-			$childprod->setAttribute("id", $pv);
+				//get query for subproducts
+				$childnode = $newdoc->createElement('dwin_display_item_number');
+				$childnode->nodeValue = $subprod['dwin_display_item_number'];
+				$childprod->appendChild($childnode);
 
-			//$childprod->nodeValue = $pv;
-			$children->appendChild($childprod);
+				$description = $newdoc->createElement('description');
+				$description->nodeValue = $subprod['dwin_item_description'];
+				$childprod->appendChild($description);
 
+				$uom = $newdoc->createElement('uom');
+				$uom->nodeValue = $subprod['in_purchase_unit'];
+				$childprod->appendChild($uom);
 
-			//get query for subproducts
-			$childnode = $newdoc->createElement('dwin_display_item_number');
-			$childnode->nodeValue = $subprod['dwin_display_item_number'];
-			$childprod->appendChild($childnode);
-
-			$description = $newdoc->createElement('description');
-			$description->nodeValue = $subprod['dwin_item_description'];
-			$childprod->appendChild($description);
-
-			$uom = $newdoc->createElement('uom');
-			$uom->nodeValue = $subprod['in_purchase_unit'];
-			$childprod->appendChild($uom);
-
-			//format list_price to two decimal places
-			$list_price = $newdoc->createElement('list_price');
-			$list_price->nodeValue = number_format($subprod['in_list_price'],2);
-			$childprod->appendChild($list_price);
+				//format list_price to two decimal places
+				$list_price = $newdoc->createElement('list_price');
+				$list_price->nodeValue = number_format($subprod['in_list_price'],2);
+				$childprod->appendChild($list_price);
 
 
 
-		}
+			}
 
 		}
 
@@ -706,5 +719,3 @@ function get_string_between($string, $start, $end){
 	$len = strpos($string, $end, $ini) - $ini;
 	return substr($string, $ini, $len);
 }
-
-

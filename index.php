@@ -18,7 +18,7 @@ require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
 DB::$dbName = $db_name;   //database name
 DB::$user = $db_user;     //user name
 DB::$password = $db_password;   //user password
-DB::$port = $dp_port;   //usually 3306
+DB::$port = $db_port;   //usually 3306
 DB::$host = $db_host;  //IP or localhost
 
 //get list of departments
