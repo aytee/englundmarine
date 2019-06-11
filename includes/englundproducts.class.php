@@ -28,7 +28,7 @@ class EnglundProducts
 				'SELECT dw_item.dwin_display_item_number AS item_number, view_representative_items.dwin_display_item_number AS cluster,
        if(sgir_item_number IS NULL,"Regular", if(dw_item.dwin_display_item_number=view_representative_items.dwin_display_item_number,"parent","child")) AS item_type
        FROM dw_item 
-	   INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 AND `dw_item`.`dwin_department`="CT" 
+	   INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 AND `dw_item`.`dwin_department`="'.$this->department.'"
 	   INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND dw_item.dwin_store=1 
 	   LEFT JOIN SGIR ON dw_item.dwin_item_number = SGIR.sgir_item_number AND dw_item.dwin_store=1 
        LEFT JOIN view_representative_items ON SGIR.sgir_representative_item = view_representative_items.dwin_item_number

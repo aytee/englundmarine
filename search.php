@@ -47,16 +47,11 @@ $args = array(
 //use the $clean array for all the sanitized $_GET values
 $clean = filter_input_array(INPUT_GET,$args);
 
-
 //Build products list
 $eproducts = new EnglundProducts();
 
-
-
-//print_r($clean);
+//department code (BI, DN, etc)
 $eproducts->department = $clean['department'];
-
-
 
 
 // Create a new DOM document  (XML)
@@ -86,36 +81,33 @@ $current_fineline = '';
 
 
 /*General Select */
-//$sku = 'RUL10';
-
-//build a list of skus
-//TODO: Build this list from another query or a some form input
-//$skus = array('BLU11001','RUL10');
 
 
-$query = 'SELECT * FROM `dw_item` 
-INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
-INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
-INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
-INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
-INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
-INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
-WHERE dw_item.dwin_manufacturer = %s ';
-
-if($_GET['type']=='short'){
-	$skus = array('RUL37A','RUL-BP12V','BLU5063','BLU-ESBS');
-
-}
-if($_GET['type']=='blu'){
-	$topid = 'blu';
-	//get all items that have dw_item.manufacturer_id = "BLU"
-}
+//$query = 'SELECT * FROM `dw_item`
+//INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1
+//INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+//INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+//INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+//INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+//INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
+//WHERE dw_item.dwin_manufacturer = %s ';
+//
+//if($_GET['type']=='short'){
+//	$skus = array('RUL37A','RUL-BP12V','BLU5063','BLU-ESBS');
+//
+//}
+//if($_GET['type']=='blu'){
+//	$topid = 'blu';
+//	//get all items that have dw_item.manufacturer_id = "BLU"
+//}
 
 //JEREMY ADDED THE ORDER BY....NOT SURE WHICH QUERY IT NEEDS TO GO IN
 
-if($_GET['type']=='all'){
+//query for all skus by department
+if($clean['type']=='all'){
+
 	$query = 'SELECT * FROM `dw_item` 
-		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	AND `dw_item`.`dwin_department`="CT"
+		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	AND `dw_item`.`dwin_department`="'.$eproducts->department.'"
 		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
 		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
 		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
@@ -126,8 +118,11 @@ if($_GET['type']=='all'){
 
 }
 
-$topproducts_results = DB::query($query,$topid);
+print 'QUERY:: '.$query .'<br/><br/>';
 
+$topproducts_results = DB::query($query);
+
+//build a list of skus
 foreach ($topproducts_results as $topkey=>$toprow) {
 
 	//Not sure if this should be 'dwin_display_item_number' or 'dwin_item_number'
@@ -693,15 +688,22 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 }
 
 //Save does work
-$filename = 'englund.xml';
+//$filename = 'englund.xml';
 
 if(isset($clean['type'])){
 	$filename = '../catalog_xml/englund_'.$clean["type"].'.xml';
 
-
 }
 
+//save the file
 if($newdoc->save($filename)){
+
+	//now open the file back up to do some search and replace
+	//function is at the bottom of this page
+	post_process_search_replace($filename);
+
+
+
 	print '<br/><br/><strong>Generated file saved as '. $filename .'</strong>';
 
 }
@@ -719,3 +721,38 @@ function get_string_between($string, $start, $end){
 	$len = strpos($string, $end, $ini) - $ini;
 	return substr($string, $ini, $len);
 }
+
+
+/*
+ * Post file-save search and replace functionality
+ * TODO: JEREMY - THIS IS YOUR FUNCTION TO WORK IN
+ */
+function post_process_search_replace($filename){
+
+	//open the file and read the contents into a string
+	$product_text = file_get_contents($filename);
+	//close the file
+	fclose($fp);
+
+
+	////// JEREMY START THE MAGIC HERE   ////////
+
+	//proof of concept test to replace "PUMPS" with "PROFIT"
+	//$product_text = str_ireplace('PUMPS','PROFIT',$product_text);
+
+
+
+	//////  JEREMY END THE MAGIC HERE   ////////
+
+
+
+	//open the same filename, but it will be emptied of content
+	$fp1 = fopen($filename, "w") or die("Unable to open file!");
+
+	//write the text string to file
+	fwrite($fp1,$product_text);
+	//close the file
+	fclose($fp1);
+	//file should continue to exist in its spot, so no action needed
+}
+

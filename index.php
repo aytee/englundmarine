@@ -40,13 +40,13 @@ $dept_list = DB::query($query);
     </head>
 	<body>
         <h1>Englund Marine Catalog Data Generation Tool</h1>
-
-        <p><a href="search.php?type=short">Just the Four items</a> </p>
-        <p><a href="search.php?type=blu">Items = "BLU"</a> </p>
-        <p><a href="search.php?type=all">All items</a> </p>
+<!---->
+<!--        <p><a href="search.php?type=short">Just the Four items</a> </p>-->
+<!--        <p><a href="search.php?type=blu">Items = "BLU"</a> </p>-->
+<!--        <p><a href="search.php?type=all">All items</a> </p>-->
 
         <div style="background-color:lightgrey; padding:10px;">
-        <h2>Or Select your Department</h2>
+        <h2> Select the Department</h2>
         <form action="search.php" method="get">
             Department:
             <select name = "department">
@@ -63,17 +63,16 @@ $dept_list = DB::query($query);
 
 
             </select><br/><br/>
-
-            <p>Search Type:
-
-            <select name="type">
-                <option value="all" selected>All Products</option>
-                <option value="short" >Just the Four Items</option>
-                <option value="blue" >Items = 'BLU'</option>
-
-            </select>
-
-            </p>
+            <input type="hidden" name="type" value="all"/>
+<!--            <p>Search Type:-->
+<!--            <select name="type">-->
+<!--                <option value="all" selected>All Products</option>-->
+<!--                <option value="short" >Just the Four Items</option>-->
+<!--                <option value="blue" >Items = 'BLU'</option>-->
+<!---->
+<!--            </select>-->
+<!---->
+<!--            </p>-->
 
 
 
