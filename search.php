@@ -56,6 +56,7 @@ $eproducts->department = $clean['department'];
 
 // Create a new DOM document  (XML)
 $newdoc = new DOMDocument;
+$newdoc->encoding = 'utf-8';
 $newdoc->formatOutput = true;
 
 //create outer wrapper for all products
@@ -441,6 +442,9 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 			}
 
 
+			print "FINELINE:: ".$val['dwin_fineline']." -- " .$val['dwfi_fineline_name'] . "<br/>";
+
+
 
 			//fineline section
 			if($val['dwfi_fineline_name'] != $current_fineline){
@@ -615,7 +619,7 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 						if (in_array($k, $show)) {
 							$node = $newdoc->createElement($k);
 							//add node Value
-							$node->nodeValue = $v;
+							$node->nodeValue = htmlspecialchars($v);
 
 							//append child to Product node
 							$product->appendChild($node);
