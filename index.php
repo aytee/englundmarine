@@ -10,9 +10,6 @@ if(file_exists('../permanent/settings.php')){
 
 }
 
-
-
-
 /* Include the meekro DB class */
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
 DB::$dbName = $db_name;   //database name
@@ -22,16 +19,11 @@ DB::$port = $db_port;   //usually 3306
 DB::$host = $db_host;  //IP or localhost
 
 //get list of departments
-
-$query = 'SELECT * FROM view_dw_department WHERE view_dw_department.dwde_store_number="1"  ';
+$query = 'SELECT * FROM view_dw_department WHERE view_dw_department.dwde_store_number="1" AND view_dw_department.dwde_non_merchandise_flag="N" AND view_dw_department.dwde_department BETWEEN "AA" AND "ZZ" ';
 
 $dept_list = DB::query($query);
 
-
-
-
 ?>
-
 
 <html>
     <head>
@@ -40,10 +32,6 @@ $dept_list = DB::query($query);
     </head>
 	<body>
         <h1>Englund Marine Catalog Data Generation Tool</h1>
-<!---->
-<!--        <p><a href="search.php?type=short">Just the Four items</a> </p>-->
-<!--        <p><a href="search.php?type=blu">Items = "BLU"</a> </p>-->
-<!--        <p><a href="search.php?type=all">All items</a> </p>-->
 
         <div style="background-color:lightgrey; padding:10px;">
         <h2> Select the Department</h2>
@@ -64,19 +52,6 @@ $dept_list = DB::query($query);
 
             </select><br/><br/>
             <input type="hidden" name="type" value="all"/>
-<!--            <p>Search Type:-->
-<!--            <select name="type">-->
-<!--                <option value="all" selected>All Products</option>-->
-<!--                <option value="short" >Just the Four Items</option>-->
-<!--                <option value="blue" >Items = 'BLU'</option>-->
-<!---->
-<!--            </select>-->
-<!---->
-<!--            </p>-->
-
-
-
-
 
             <input type="submit" value="Submit"/>
 
@@ -84,8 +59,6 @@ $dept_list = DB::query($query);
 
         </div>
 	</body>
-
-
 
 
 </html>

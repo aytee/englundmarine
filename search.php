@@ -433,7 +433,7 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 			//class section
 			if($val['dwcl_class_name'] != $current_class){
 				$dwin_class_section = $newdoc->createElement('class_section');
-				$dwin_class_section->nodeValue = $val['dwcl_class_name'];
+				$dwin_class_section->nodeValue = htmlspecialchars($val['dwcl_class_name']);
 				$product->appendChild($dwin_class_section);
 
 				//now set the current class value to our existing class in our loop
@@ -442,14 +442,14 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 			}
 
 
-			print "FINELINE:: ".$val['dwin_fineline']." -- " .$val['dwfi_fineline_name'] . "<br/>";
+			//print "FINELINE:: ".$val['dwin_fineline']." -- " .$val['dwfi_fineline_name'] . "<br/>";
 
 
 
 			//fineline section
 			if($val['dwfi_fineline_name'] != $current_fineline){
 				$dwin_fineline_section = $newdoc->createElement('fineline_section');
-				$dwin_fineline_section->nodeValue = $val['dwfi_fineline_name'];
+				$dwin_fineline_section->nodeValue = htmlspecialchars($val['dwfi_fineline_name']);
 				$product->appendChild($dwin_fineline_section);
 
 				//now set the current fineline value to our existing fineline in our loop
@@ -741,8 +741,157 @@ function post_process_search_replace($filename){
 
 	////// JEREMY START THE MAGIC HERE   ////////
 
-	//proof of concept test to replace "PUMPS" with "PROFIT"
-	//$product_text = str_ireplace('PUMPS','PROFIT',$product_text);
+	//proof of concept test to find and replace
+	//$product_text = str_ireplace('product_name','Change1',$product_text);
+	//$product_text = str_ireplace('class_section','Change2',$product_text);
+
+//$product_text = preg_replace('</th>\\s*\\n*\\s*</tr>','</th></tr></thead><tbody>',$product_text);
+//  Generic Fixes - Find and Replace
+
+//"Remove trailing and leading whitespace"
+//$product_text = preg_replace("/^\\s*(.*)\\s*$/", "$1", $product_text);
+
+//"Remove blank lines"
+	$product_text = preg_replace("/^\\n/", "", $product_text);
+
+//"Remove comments"
+	$product_text = preg_replace("/<!--.+-->/", "", $product_text);
+
+//"Remove spaces between tags"
+	$product_text = preg_replace("/> +</", "><", $product_text);
+
+//"Add line between products"
+	$product_text = preg_replace("/<\/product>/", "</product>\n", $product_text);
+
+//"Remove accordion1"
+	$product_text = preg_replace("/<div class=\"accordionContent\">/", "", $product_text);
+
+//"Remove accordion2"
+	$product_text = preg_replace("/<div class=\"accordionButton\">/", "", $product_text);
+
+//"Remove <div>"
+	$product_text = preg_replace("/<div>/", "", $product_text);
+
+//"Remove </div>"
+	$product_text = preg_replace("/<\/div>/", "", $product_text);
+
+//"image path to mapped drives"
+	$product_text = preg_replace("/ems-fs01\/public share\/catalog/", "L:", $product_text);
+
+//"tech image tag path"
+	$product_text = preg_replace("/<img src=\"https:\/\/img2.activant-inet.com\/custom\/022170\/image\//", "<tech href=\"file:///L:/images/", $product_text);
+
+//"image tag backslash path>"
+	$product_text = preg_replace("/<image href=\"file:\\\\+ems-fs01\\\\public share\\\\Web\\\\CONTENT\\\\_04 IMAGES LOADED\\\\_01 IMAGES STD\\\\/", "", $product_text);
+
+//  Fix LISTS - Find and Replace
+
+//"Isolate end1""
+	$product_text = preg_replace("/<\/ul>\n *<table/", "<end>\n\t\t<table", $product_text);
+
+//"Isolate end2"
+	$product_text = preg_replace("/<\/ul>\n *<children>/", "<end>\n\t\t<children>", $product_text);
+
+//"Remove <ul>"
+	$product_text = preg_replace("/<ul>/", "", $product_text);
+
+//"Remove </ul>"
+	$product_text = preg_replace("/<\/ul>/", "", $product_text);
+
+//"Remove </li>"
+	$product_text = preg_replace("/<\/li>/", "", $product_text);
+
+//"Close <li> with </li>"
+	$product_text = preg_replace("/<li>/", "</li>\n\t\t<li>", $product_text);
+
+//"Close 2nd <strong>""
+	$product_text = preg_replace("/<strong>/", "</li>\n\t\t<strong>", $product_text);
+
+//"Remove </li> from begin1"
+	$product_text = preg_replace("/<\/body>\\s*\\n*\\s*<\/li>/", "</body>", $product_text);
+
+//"Remove </li> from begin2"
+	$product_text = preg_replace("/<\/strong>\\s*\\n*\\s*<\/li>/", "</strong>", $product_text);
+
+//"Remove </li> from begin3"
+	$product_text = preg_replace("/<\/h6>\\s*\\n*\\s*<\/li>/", "</h6>", $product_text);
+
+//"Remove double </li>"
+	$product_text = preg_replace("/<\/li>\\s*\\n*\\s*<\/li>/", "</li>", $product_text);
+
+//"Remove blanks before close </li>"
+	$product_text = preg_replace("/\\s*\\n*\\s*<\/li>/", "</li>", $product_text);
+
+//"Remove empty <li> tags"
+	$product_text = preg_replace("/<li>\\s*\\n*\\s*<\/li>/", "", $product_text);
+
+//"Replace <end> with </li>"
+	$product_text = preg_replace("/<end>/", "</li>", $product_text);
+
+//"Add blank line &#13;"
+	$product_text = preg_replace("/<li>/", "<li>&#13;", $product_text);
+
+//"remove leading &#13; behind <strong>"
+	$product_text = preg_replace("/<\/strong>\\s*\\n*\\s*<li>&#13;/", "</strong>\n\t\t<li>", $product_text);
+
+//"remove <ul/>"
+	$product_text = preg_replace("/<ul\/>/", "", $product_text);
+
+
+
+// Fix DESCRIPTION - Find and Replace
+
+//"remove <body>"
+	$product_text = preg_replace("/<body>/", "", $product_text);
+
+//"remove </body>"
+	$product_text = preg_replace("/<\/body>/", "", $product_text);
+
+//"replace <p>"
+	$product_text = preg_replace("/<p>/", "<paragraph>", $product_text);
+
+//"replace </p>"
+	$product_text = preg_replace("/<\/p>/", "</paragraph>", $product_text);
+
+//"remove </paragraph></li>"
+	$product_text = preg_replace("/<\/paragraph><\/li>/", "</paragraph>", $product_text);
+
+	//  Fix TABLES - Find and Replace
+
+	$product_text = preg_replace("/<tbody>/", "<thead>", $product_text);
+	$product_text = preg_replace("/<\/th>\\s*\\n*\\s*<\/tr>/", "</th></tr></thead><tbody>", $product_text);
+	$product_text = preg_replace("/<tr>/", "<row>", $product_text);
+	$product_text = preg_replace("/<\/tr>/", "</row>", $product_text);
+	$product_text = preg_replace("/<th>/", "<entry>", $product_text);
+	$product_text = preg_replace("/<\/th>/", "</entry>", $product_text);
+	$product_text = preg_replace("/<td>/", "<entry>", $product_text);
+	$product_text = preg_replace("/<\/td>/", "</entry>", $product_text);
+	$product_text = preg_replace("/<table type=\"outer\">\n<table>/", "<table type=\"outer\"><table>", $product_text);
+	$product_text = preg_replace("/<\/table>\n<\/table>/", "<table type=\"outer\"><table", $product_text);
+
+//  Alternate Format to Fix TABLES - Find and Replace
+
+//$patterns = array();
+//$patterns[0] = "/<tbody>/";
+//$patterns[5] = "/<\/th>\\s*\\n*\\s*<\/tr>/";
+//$patterns[10] = "/<tr>/";
+//$patterns[15] = "/<\/tr>/";
+//$patterns[20] = "/<th>/";
+//$patterns[25] = "/<\/th>/";
+//$patterns[30] = "/<td>/";
+//$patterns[35] = "/<\/td>/";
+//$replacements = array();
+//$replacements[0] = "<thead>";
+//$replacements[5] = "</th></tr></thead><tbody>";
+//$replacements[10] = "<row>";
+//$replacements[15] = "</row>";
+//$replacements[20] = "</entry>";
+//$replacements[25] = "<entry>";
+//$replacements[30] = "</entry>";
+//$replacements[35] = "<entry>";
+//ksort($patterns);
+//ksort($replacements);
+//$product_text = preg_replace($patterns, $replacements, $product_text);
 
 
 
