@@ -30,12 +30,13 @@ if(file_exists('../permanent/settings.php')){
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
 require_once __DIR__ . '/includes/englundproducts.class.php';
 
-//add DB credentials from the settings.php file
-DB::$dbName = $db_name;   //database name
-DB::$user = $db_user;     //user name
-DB::$password = $db_password;   //user password
-DB::$port = $dp_port;   //usually 3306
-DB::$host = $db_host;  //IP or localhost
+//primary DB
+$db = new MeekroDB($db_host, $db_user, $db_password,$db_name,$db_port);
+
+//secondary datasource
+$db2 = new MeekroDB($db2_host, $db2_user, $db2_password,$db2_name,$db2_port);
+
+
 
 //filter the input just in case somebody gets access to this and wants to do something nefarious
 //add new $_GET args here
@@ -50,6 +51,9 @@ $clean = filter_input_array(INPUT_GET,$args);
 
 //Build products list
 $eproducts = new EnglundProducts();
+
+$eproducts->db = $db;
+$eproducts->db2 = $db2;
 
 //department code (BI, DN, etc)
 $eproducts->department = $clean['department'];
@@ -129,7 +133,7 @@ if($clean['type']=='all'){
 //
 
 	$query = 'SELECT * FROM `dw_item` 
-	INNER JOIN section_class ON dw_item_class=section_class.class AND section_class.section="'.$eproducts->section.'"
+INNER JOIN section_class ON dw_item.dwin_class=section_class.class AND section_class.section="'.$eproducts->section.'"
 		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
 		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
 		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
@@ -144,7 +148,7 @@ if($clean['type']=='all'){
 
 print 'QUERY:: '.$query .'<br/><br/>';
 
-$topproducts_results = DB::query($query);
+$topproducts_results = $db->query($query);
 
 //build a list of skus
 foreach ($topproducts_results as $topkey=>$toprow) {
@@ -229,7 +233,7 @@ foreach ($skus as $sku){
 
 
 
-			$subproducts_results = DB::query(
+			$subproducts_results = $db->query(
 					'SELECT * FROM `dw_item` 
 						INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store`  AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
 						INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department`  AND `view_dw_department`.`dwde_store_number`=1
@@ -274,16 +278,16 @@ foreach ($skus as $sku){
 //each db row is an individual row of the description.
 	//This builds an array of all the Production descriptions that is referenced further below
 	//must link with the foreign key view_item_notes.mg_group_name = dw_item.dwin_item_number
-	//$notes = DB::query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);
+	//$notes = $db->query("SELECT mx_text FROM view_item_notes WHERE mg_group_name = %s ORDER BY mx_line_nbr",$sku);
 
 	//using this query resultsin the display_item_number being added to each row of the notes.
-//	$notes = DB::query("SELECT dw_item.dwin_display_item_number, view_item_notes.mx_text
+//	$notes = $db->query("SELECT dw_item.dwin_display_item_number, view_item_notes.mx_text
 //FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_item.dwin_item_number
 //WHERE  view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_display_item_number = %s
 //    ORDER BY view_item_notes.mg_group_name, view_item_notes.mx_line_nbr",$sku);
 //
 
-	$notes = DB::query('SELECT view_item_notes.mx_text
+	$notes = $db->query('SELECT view_item_notes.mx_text
 FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_item.dwin_item_number AND view_item_notes.mgdb_message_type=8 AND dw_item.dwin_store=1 AND dwin_display_item_number = %s 
     ORDER BY view_item_notes.mg_group_name, view_item_notes.mx_line_nbr',$sku);
 	foreach ($notes as $row) {
@@ -387,7 +391,7 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 	//$note = str_replace('</td','</entry',$note);
 
 //Get all child products under the product
-	$results = DB::query(
+	$results = $db->query(
 			'SELECT * FROM `dw_item` INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
 			INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
 			INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1 

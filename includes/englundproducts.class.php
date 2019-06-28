@@ -3,6 +3,10 @@
 class EnglundProducts
 {
 
+	public $db;
+	public $db2;
+
+
 	public $product_type_list;
 	public $product_type_list_solo;
 
@@ -40,7 +44,7 @@ class EnglundProducts
 				'SELECT dw_item.dwin_display_item_number AS item_number, view_representative_items.dwin_display_item_number AS cluster,
        if(sgir_item_number IS NULL,"Regular", if(dw_item.dwin_display_item_number=view_representative_items.dwin_display_item_number,"parent","child")) AS item_type
        FROM dw_item 
-	   INNER JOIN section_class ON dw_item_class=section_class.class AND section_class.section="'.$this->section.'"
+INNER JOIN section_class ON dw_item.dwin_class=section_class.class AND section_class.section="'.$this->section.'"
 	   
 	   LEFT JOIN SGIR ON dw_item.dwin_item_number = SGIR.sgir_item_number AND dw_item.dwin_store=1 
        LEFT JOIN view_representative_items ON SGIR.sgir_representative_item = view_representative_items.dwin_item_number
@@ -51,7 +55,7 @@ class EnglundProducts
 
 	   SELECT `dw_item_1`.`dwin_display_item_number` AS item_number, `SGIR`.`sgir_representative_item` AS cluster, "parent" AS item_type
 	 FROM `dw_item` 
-	 INNER JOIN `IN` ON `dw_item`.`dwin_store` = `IN`.`in_store` AND `dw_item`.`dwin_item_number` = `IN`.`in_item_number` 
+INNER JOIN section_class ON dw_item.dwin_class=section_class.class AND section_class.section="'.$this->section.'"
 	 INNER JOIN `SGIR` ON `IN`.`in_item_number` = `SGIR`.`sgir_item_number` 
 	 INNER JOIN `view_representative_items` ON `SGIR`.`sgir_representative_item` = `view_representative_items`.`dwin_item_number`
 	 INNER JOIN `dw_item` AS `dw_item_1` ON `view_representative_items`.`dwin_display_item_number` = `dw_item_1`.`dwin_item_number`
@@ -90,7 +94,7 @@ class EnglundProducts
 
 
 
-		$list = DB::query($query,$this->department);
+		$list = $this->db->query($query,$this->department);
 
 		foreach ($list as $row) {
 
@@ -137,13 +141,15 @@ class EnglundProducts
 		);
 
 		//create temp table for catalog_section
-		$tquery = 'CREATE TEMPORARY TABLE catalog_section (id INT UNSIGNED NOT NULL DEFAULT 0 ,section_name VARCHAR(50) NOT NULL)';
-		DB::query($tquery);
+		$tquery = 'CREATE TEMPORARY TABLE catalog_section (id INT UNSIGNED NOT NULL DEFAULT 0, section_name VARCHAR(50) NOT NULL)';
+		$this->db2->query($tquery);
+
+
 
 		//iterate over array and insert into temp table
 		foreach($section_array as $key=>$value){
 			$squery = 'INSERT INTO `catalog_section` (id, section_name) VALUES ('.$key.',"'.$value.'")';
-			DB::query($squery);
+			$this->db2->query($squery);
 
 		}
 
@@ -172,12 +178,12 @@ class EnglundProducts
 
 		//create temp table for catalog_section
 		$tquery = 'CREATE TEMPORARY TABLE section_class (class VARCHAR(50) NOT NULL ,section INT UNSIGNED NOT NULL DEFAULT 0)';
-		DB::query($tquery);
+		$this->db2->query($tquery);
 
 		//iterate over array and insert into temp table
 		foreach($section_class_array as $key=>$value){
 			$squery = 'INSERT INTO `section_class` (class, section) VALUES ("'.$key.'","'.$value.'")';
-			DB::query($squery);
+			$this->db2->query($squery);
 
 		}
 

@@ -12,20 +12,25 @@ if(file_exists('../permanent/settings.php')){
 
 /* Include the meekro DB class */
 require_once __DIR__ . '/includes/meekrodb.2.3.class.php';
-DB::$dbName = $db_name;   //database name
-DB::$user = $db_user;     //user name
-DB::$password = $db_password;   //user password
-DB::$port = $db_port;   //usually 3306
-DB::$host = $db_host;  //IP or localhost
+//$host=null, $user=null, $password=null, $dbName=null, $port=null,
+
+//primary DB
+$db = new MeekroDB($db_host, $db_user, $db_password,$db_name,$db_port);
+
+//secondary datasource
+$db2 = new MeekroDB($db2_host, $db2_user, $db2_password,$db2_name,$db2_port);
+
 
 require_once __DIR__ . '/includes/englundproducts.class.php';
 
 //build section temp table
 $eproducts = new EnglundProducts();
+
+$eproducts->db = $db;
+$eproducts->db2 = $db2;
 $eproducts->buildSectionTable();
 
-//$section_list = DB::query('SELECT * FROM catalog_section');
-//print_r($section_list);
+$section_list = $db2->query('SELECT * FROM catalog_section');
 
 
 
