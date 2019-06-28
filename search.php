@@ -508,100 +508,105 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 					/* Start Lists Move from inside body to outside body*/
 					//identify the <ul> lists in the <body>
 					//get all the <ul> elements
-					$lists = $node->getElementsByTagName('ul');
+
+					//***   JEREMY COMMENTED OUT
+
+					//***   */$lists = $node->getElementsByTagName('ul');
 
 					//iterate through the <ul> lists and add them to the <product>
-					if ($lists->length > 0) {
+					//*** if ($lists->length > 0) {
 
 //					print'lists::';
 //					print_R($lists);
 //					print ':end lists';
 
-						foreach ($lists as $list) {
-							/* add <ul> items to <product> */
-							$nl = $newdoc->importNode($list, true);
-							//append adds node to the <product>
-							$product->appendChild($nl);
-						}
+					//*** 	foreach ($lists as $list) {
+					/* add <ul> items to <product> */
+					//*** 	$nl = $newdoc->importNode($list, true);
+					//append adds node to the <product>
+					//*** 	$product->appendChild($nl);
+					//*** }
 
-						//now actually remove the lists
-						//	$lists = $node->getElementsByTagName('ul');
-						if ($lists->length > 0) {
-							//set default
-							$lists_to_remove = array();
+					//now actually remove the lists
+					//	$lists = $node->getElementsByTagName('ul');
+					//*** if ($lists->length > 0) {
+					//set default
+					//*** 	$lists_to_remove = array();
 
-							foreach ($lists as $list) {
-								//make a list of lists to remove (must do it this way)
-								$lists_to_remove[] = $list;
-							}
-							foreach ($lists_to_remove as $key => $lr) {
-								//print "<br/>list key:".$key;
-								//print_R($lr);
-								$lr->parentNode->removeChild($lr);
+					//*** 	foreach ($lists as $list) {
+					//make a list of lists to remove (must do it this way)
+					//*** 		$lists_to_remove[] = $list;
+					//*** 	}
+					//*** 	foreach ($lists_to_remove as $key => $lr) {
+					//print "<br/>list key:".$key;
+					//print_R($lr);
+					//*** 	$lr->parentNode->removeChild($lr);
 
-							}
+					//*** }
 
-						}
-					}
+					//*** }
+					//*** }
 					/* End get all lists */
 
-					/*Get all tables in body and move them outside of body node*/
-					$tables = $node->getElementsByTagName('table');
+					// /*Get all tables in body and move them outside of body node*/
+					// $tables = $node->getElementsByTagName('table');
 
-					//iterate through the <ul> lists and add them to the <product>
-					if ($tables->length > 0) {
-						foreach ($tables as $table) {
+					// //iterate through the <ul> lists and add them to the <product>
+					// if ($tables->length > 0) {
+					// 	foreach ($tables as $table) {
 
-							if ($table->hasAttribute('type')) {
+					//		if ($table->hasAttribute('type')) {
 
-								$tabletype = $table->getAttribute('type');
+					// 			$tabletype = $table->getAttribute('type');
 
-								/* add <table> items to <product> */
-								//filtering by type=outer in the table wrapper
-								if ($tabletype == 'outer') {
-									$nt = $newdoc->importNode($table, true);
-									//append adds node to the <product>
-									$product->appendChild($nt);
+					// 			/* add <table> items to <product> */
+					// 			//filtering by type=outer in the table wrapper
+					// 			if ($tabletype == 'outer') {
+					// 				$nt = $newdoc->importNode($table, true);
+					// 				//append adds node to the <product>
+					// 				$product->appendChild($nt);
 
-								}
+					// 			}
 
-							}
+					// 		}
 
-						}
+					// 	}
 
-						//now actually remove the tables
-						if ($tables->length > 0) {
-							$tables_to_remove = array();
+					// 	//now actually remove the tables
+					// 	if ($tables->length > 0) {
+					// 		$tables_to_remove = array();
 
-							foreach ($tables as $table) {
-								//make a list of tables to remove (must do it this way)
-								$tables_to_remove[] = $table;
-							}
-							foreach ($tables_to_remove as $tr) {
-								$tr->parentNode->removeChild($tr);
-							}
+					// 		foreach ($tables as $table) {
+					// 			//make a list of tables to remove (must do it this way)
+					//			$tables_to_remove[] = $table;
+					//		}
+					// 		foreach ($tables_to_remove as $tr) {
+					// 			$tr->parentNode->removeChild($tr);
+					// 		}
 
-						}
-					}
+					// 	}
+					// }
 					/* End get all tables from body node */
 
 
 					/* Strip all div nodes from body */
-					$divs = $node->getElementsByTagName('div');
-					if ($divs->length > 0) {
+					// $divs = $node->getElementsByTagName('div');
+					// if ($divs->length > 0) {
 
-						//set default
-						$divs_to_remove = array();
+					// 	//set default
+					// 	$divs_to_remove = array();
 
-						foreach ($divs as $div) {
-							$divs_to_remove[] = $div;
-						}
-						foreach ($divs_to_remove as $dr) {
-							$dr->parentNode->removeChild($dr);
-						}
+					// 	foreach ($divs as $div) {
+					// 		$divs_to_remove[] = $div;
+					// 	}
+					// 	foreach ($divs_to_remove as $dr) {
+					// 		$dr->parentNode->removeChild($dr);
+					// 	}
 
-					}
+					// }
 					/* end div node removal from body */
+
+
 
 					//need to replace old body node with new body node
 					//get the new version of the body after we've stripped out <ul> and <table> and <div> nodes
@@ -746,16 +751,18 @@ function post_process_search_replace($filename){
 	//$product_text = str_ireplace('class_section','Change2',$product_text);
 
 //$product_text = preg_replace('</th>\\s*\\n*\\s*</tr>','</th></tr></thead><tbody>',$product_text);
+
+
+
 //  Generic Fixes - Find and Replace
 
+
 //"Remove trailing and leading whitespace"
-//$product_text = preg_replace("/^\\s*(.*)\\s*$/", "$1", $product_text);
+	$product_text = preg_replace("/^\\s*(.*)\\s*$/", "$1", $product_text);
 
 //"Remove blank lines"
 	$product_text = preg_replace("/^\\n/", "", $product_text);
 
-//"Remove comments"
-	$product_text = preg_replace("/<!--.+-->/", "", $product_text);
 
 //"Remove spaces between tags"
 	$product_text = preg_replace("/> +</", "><", $product_text);
@@ -763,17 +770,58 @@ function post_process_search_replace($filename){
 //"Add line between products"
 	$product_text = preg_replace("/<\/product>/", "</product>\n", $product_text);
 
+//"remove comments"
+	$product_text = preg_replace("/<!--.*-->/", "", $product_text);
+
 //"Remove accordion1"
 	$product_text = preg_replace("/<div class=\"accordionContent\">/", "", $product_text);
 
 //"Remove accordion2"
 	$product_text = preg_replace("/<div class=\"accordionButton\">/", "", $product_text);
 
+
 //"Remove <div>"
 	$product_text = preg_replace("/<div>/", "", $product_text);
 
+
+//"Remove Click to Expand>"
+	$product_text = preg_replace("/\s*\(Click to expand\)/", "", $product_text);
+
 //"Remove </div>"
 	$product_text = preg_replace("/<\/div>/", "", $product_text);
+
+//"Remove <div/>"
+	$product_text = preg_replace("/<div\/>/", "", $product_text);
+
+
+//"Replace h6> with strong>""
+	$product_text = preg_replace("/h6>/", "strong>", $product_text);
+
+//"remove <body>"
+	$product_text = preg_replace("/<body>/", "", $product_text);
+
+//"remove </body>"
+	$product_text = preg_replace("/<\/body>/", "", $product_text);
+
+//"remove <a links"
+	$product_text = preg_replace("/<a.*<\/a>/", "", $product_text);
+
+//"remove empty <p>"
+	$product_text = preg_replace("/<p>\\t*\\s*\\n*\\s*\\t*<\/p>/", "", $product_text);
+
+
+	//"replace <p>"
+	$product_text = preg_replace("/<p>/", "<paragraph>", $product_text);
+
+//"replace </p>"
+	$product_text = preg_replace("/<\/p>/", "</paragraph>", $product_text);
+
+
+//"remove </paragraph></li>"
+	$product_text = preg_replace("/<\/paragraph><\/li>/", "</paragraph>", $product_text);
+
+//"remove empty </paragraph>"
+	$product_text = preg_replace("/<\/paragraph><\/li>/", "</paragraph>", $product_text);
 
 //"image path to mapped drives"
 	$product_text = preg_replace("/ems-fs01\/public share\/catalog/", "L:", $product_text);
@@ -784,13 +832,40 @@ function post_process_search_replace($filename){
 //"image tag backslash path>"
 	$product_text = preg_replace("/<image href=\"file:\\\\+ems-fs01\\\\public share\\\\Web\\\\CONTENT\\\\_04 IMAGES LOADED\\\\_01 IMAGES STD\\\\/", "", $product_text);
 
-//  Fix LISTS - Find and Replace
+//open the same filename, but it will be emptied of content
+	$fp1 = fopen($filename, "w") or die("Unable to open file!");
+
+//write the text string to file
+	fwrite($fp1,$product_text);
+//close the file
+	fclose($fp1);
+//file should continue to exist in its spot, so no action needed
+
+//open the file and read the contents into a string
+	$product_text = file_get_contents($filename);
+//close the file
+	fclose($fp);
+
+
+
+	//  Fix LISTS - Find and Replace
+
+
+//"Isolate end0"
+	$product_text = preg_replace("/<\/li>\\t*\\s*\\n*\\s*\\t*<\/ul>/", "<end>\n\t\t", $product_text);
 
 //"Isolate end1""
-	$product_text = preg_replace("/<\/ul>\n *<table/", "<end>\n\t\t<table", $product_text);
+	$product_text = preg_replace("/<\/ul>\\t*\\s*\\n*\\s*\\t*<table/", "<end>\n\t\t<table", $product_text);
 
 //"Isolate end2"
-	$product_text = preg_replace("/<\/ul>\n *<children>/", "<end>\n\t\t<children>", $product_text);
+	$product_text = preg_replace("/<\/ul>\\t*\\s*\\n*\\s*\\t*<children>/", "<end>\n\t\t<children>", $product_text);
+
+//"Isolate end3""
+	$product_text = preg_replace("/<strong>/", "<end>\n\t\t<strong>", $product_text);
+
+//"Isolate end4""
+	$product_text = preg_replace("/<tech/", "<end>\n\t\t<tech", $product_text);
+
 
 //"Remove <ul>"
 	$product_text = preg_replace("/<ul>/", "", $product_text);
@@ -804,62 +879,67 @@ function post_process_search_replace($filename){
 //"Close <li> with </li>"
 	$product_text = preg_replace("/<li>/", "</li>\n\t\t<li>", $product_text);
 
-//"Close 2nd <strong>""
-	$product_text = preg_replace("/<strong>/", "</li>\n\t\t<strong>", $product_text);
-
 //"Remove </li> from begin1"
-	$product_text = preg_replace("/<\/body>\\s*\\n*\\s*<\/li>/", "</body>", $product_text);
+	$product_text = preg_replace("/<\/paragraph>\\t*\\s*\\n*\\s*\\t*<\/li>/", "</body>", $product_text);
 
 //"Remove </li> from begin2"
-	$product_text = preg_replace("/<\/strong>\\s*\\n*\\s*<\/li>/", "</strong>", $product_text);
+	$product_text = preg_replace("/<\/strong>\\t*\\s*\\n*\\s*\\t*<\/li>/", "</strong>", $product_text);
 
 //"Remove </li> from begin3"
-	$product_text = preg_replace("/<\/h6>\\s*\\n*\\s*<\/li>/", "</h6>", $product_text);
+	$product_text = preg_replace("/<\/table>\\t*\\s*\\n*\\s*\\t*<\/li>/", "</table>", $product_text);
 
-//"Remove double </li>"
-	$product_text = preg_replace("/<\/li>\\s*\\n*\\s*<\/li>/", "</li>", $product_text);
+
+//"replace <end> with </li>"
+	$product_text = preg_replace("/\\t*\\s*\\n*\\s*\\t*<end>/", "</li>", $product_text);
+
+
+//"replace </p>"
+	$product_text = preg_replace("/<paragraph>(.*)<\/li><strong>/", "<paragraph>$1<strong>", $product_text);
+
+	//"Remove double </li>"
+	$product_text = preg_replace("/<\/li>\\t*\\s*\\n*\\s*\\t*<\/li>/", "</li>", $product_text);
 
 //"Remove blanks before close </li>"
-	$product_text = preg_replace("/\\s*\\n*\\s*<\/li>/", "</li>", $product_text);
+	$product_text = preg_replace("/\\t*\\s*\\n*\\s*\\t*<\/li>/", "</li>", $product_text);
 
 //"Remove empty <li> tags"
-	$product_text = preg_replace("/<li>\\s*\\n*\\s*<\/li>/", "", $product_text);
-
-//"Replace <end> with </li>"
-	$product_text = preg_replace("/<end>/", "</li>", $product_text);
+	$product_text = preg_replace("/<li>\\t*\\s*\\n*\\s*\\t*<\/li>/", "", $product_text);
 
 //"Add blank line &#13;"
 	$product_text = preg_replace("/<li>/", "<li>&#13;", $product_text);
 
 //"remove leading &#13; behind <strong>"
-	$product_text = preg_replace("/<\/strong>\\s*\\n*\\s*<li>&#13;/", "</strong>\n\t\t<li>", $product_text);
+	$product_text = preg_replace("/<\/strong>\\t*\\s*\\n*\\s*\\t*<li>&#13;/", "</strong>\n\t\t<li>", $product_text);
 
-//"remove <ul/>"
-	$product_text = preg_replace("/<ul\/>/", "", $product_text);
+//Remove <end> when after <paragraph>
+//---$product_text = preg_replace("/<\/paragraph>\\t*\\s*\\n*\\s*\\t*<\/li>/", "</paragraph>", $product_text);
+
+//Remove <end> when after <table>
+//---$product_text = preg_replace("/<\/table>\\t*\\s*\\n*\\s*\\t*<\/li>/", "</table>", $product_text);
+
+//Remove <end> when after greater than sign
+	$product_text = preg_replace("/>\\t*\\s*\\n*\\s*\\t*<\/li>/", ">", $product_text);
 
 
 
-// Fix DESCRIPTION - Find and Replace
+//open the same filename, but it will be emptied of content
+	$fp1 = fopen($filename, "w") or die("Unable to open file!");
 
-//"remove <body>"
-	$product_text = preg_replace("/<body>/", "", $product_text);
+//write the text string to file
+	fwrite($fp1,$product_text);
+//close the file
+	fclose($fp1);
+//file should continue to exist in its spot, so no action needed
 
-//"remove </body>"
-	$product_text = preg_replace("/<\/body>/", "", $product_text);
-
-//"replace <p>"
-	$product_text = preg_replace("/<p>/", "<paragraph>", $product_text);
-
-//"replace </p>"
-	$product_text = preg_replace("/<\/p>/", "</paragraph>", $product_text);
-
-//"remove </paragraph></li>"
-	$product_text = preg_replace("/<\/paragraph><\/li>/", "</paragraph>", $product_text);
+//open the file and read the contents into a string
+	$product_text = file_get_contents($filename);
+//close the file
+	fclose($fp);
 
 	//  Fix TABLES - Find and Replace
 
 	$product_text = preg_replace("/<tbody>/", "<thead>", $product_text);
-	$product_text = preg_replace("/<\/th>\\s*\\n*\\s*<\/tr>/", "</th></tr></thead><tbody>", $product_text);
+	$product_text = preg_replace("/<\/th>\\t*\\s*\\n*\\s*\\t*<\/tr>/", "</th></tr></thead><tbody>", $product_text);
 	$product_text = preg_replace("/<tr>/", "<row>", $product_text);
 	$product_text = preg_replace("/<\/tr>/", "</row>", $product_text);
 	$product_text = preg_replace("/<th>/", "<entry>", $product_text);
@@ -894,8 +974,9 @@ function post_process_search_replace($filename){
 //$product_text = preg_replace($patterns, $replacements, $product_text);
 
 
-
 	//////  JEREMY END THE MAGIC HERE   ////////
+
+
 
 
 
