@@ -42,6 +42,7 @@ DB::$host = $db_host;  //IP or localhost
 $args = array(
 		'department' => FILTER_SANITIZE_STRING,
 		'type' => FILTER_SANITIZE_STRING,
+		'section' => FILTER_SANITIZE_STRING
 );
 
 //use the $clean array for all the sanitized $_GET values
@@ -52,7 +53,7 @@ $eproducts = new EnglundProducts();
 
 //department code (BI, DN, etc)
 $eproducts->department = $clean['department'];
-
+$eproducts->section = $clean['section'];
 
 // Create a new DOM document  (XML)
 $newdoc = new DOMDocument;
@@ -63,8 +64,13 @@ $newdoc->formatOutput = true;
 $products = $newdoc->createElement('products');
 $newdoc->appendChild($products);
 
+//build temp section  and sectionclass tables
+$eproducts->buildSectionTable();
+$eproducts->buildSectionClassTable();
+
 //get Product Type List
 $eproducts->getProductTypeList();
+
 
 
 //holds the product type list array of parent / child products
@@ -104,17 +110,34 @@ $current_fineline = '';
 
 //JEREMY ADDED THE ORDER BY....NOT SURE WHICH QUERY IT NEEDS TO GO IN
 
+
+
+
+
+
 //query for all skus by department
 if($clean['type']=='all'){
 
+//	$query = 'SELECT * FROM `dw_item`
+//		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	AND `dw_item`.`dwin_department`="'.$eproducts->department.'"
+//		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+//		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+//		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+//		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+//		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
+//		ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
+//
+
 	$query = 'SELECT * FROM `dw_item` 
-		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	AND `dw_item`.`dwin_department`="'.$eproducts->department.'"
+	INNER JOIN section_class ON dw_item_class=section_class.class AND section_class.section="'.$eproducts->section.'"
 		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
 		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
 		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
 		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
 		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1 
 		ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
+
+
 
 
 }
