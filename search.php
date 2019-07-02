@@ -467,7 +467,7 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 
 			//add product description
 			$product_description = $newdoc->createElement('product_description');
-			$product_description->nodeValue = $val['dwin_item_description'];
+			$product_description->nodeValue = htmlspecialchars($val['dwin_item_description']);
 			$product->appendChild($product_description);
 
 			//append child to Product node
@@ -672,7 +672,7 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 				$childprod->appendChild($childnode);
 
 				$description = $newdoc->createElement('description');
-				$description->nodeValue = $subprod['dwin_item_description'];
+				$description->nodeValue = htmlspecialchars($subprod['dwin_item_description']);
 				$childprod->appendChild($description);
 
 				$uom = $newdoc->createElement('uom');
