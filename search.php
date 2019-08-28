@@ -110,6 +110,9 @@ if($clean['type']=='all'){
 	$query = 'SELECT * FROM `dw_item` 
 		INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$eproducts->department.'"
 		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	
+		
+
+		
 		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
 		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
 		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
@@ -120,7 +123,13 @@ if($clean['type']=='all'){
 
 }
 
-print 'QUERY:: '.$query .'<br/><br/>';
+
+//AND (`dw_item`.`dwin_display_item_number`="SEA42020" OR `dw_item`.`dwin_display_item_number`="SEA420203-1" OR `dw_item`.`dwin_display_item_number`="SEA420209-1" OR `dw_item`.`dwin_display_item_number`="SEA420201-1" OR `dw_item`.`dwin_display_item_number`="SEA420204-1" OR `dw_item`.`dwin_display_item_number`="SEA420208-1" OR `dw_item`.`dwin_display_item_number`="SEA420202-1")
+
+
+
+
+//print 'QUERY:: '.$query .'<br/><br/>';
 
 $topproducts_results = DB::query($query);
 
@@ -283,13 +292,26 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 	//todo: This partial multi-table scenario is about half-baked, so revisit after proof of concept
 
 	//count # of tables  (likely always 1, but still check)
-//	$table_count = substr_count($note,'<table');
-//	print "<br/>table count:".$table_count;
+	$table_count = substr_count($note,'<table');
+	//print "<br/>table count:".$table_count;
+
+//	if($table_count == 2){
+//	print_r($note);
+//	}
+
 //
 //	$table_list = array();
 //	//explode the $note
 //
 //	//if tables exist, find each one and how many rows in that table
+
+	//todo: couple scenarios
+	//1. (non-nested)table open and close, then another table opens and closes : <table></table><table></table>
+	//2. (nested) table 1 opens, table 2 opens, table 2 closes, table 1 closes:  <table><table></table></table>
+
+	$note = process_note($note,$newdoc);
+
+
 //	if($table_count > 0){
 //
 //		for($x=0; $x < $table_count; $x++){
@@ -311,6 +333,36 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 //	}
 //	print 'table_list:';
 	//print_r($table_list);
+
+	//find tech img and remove it from the note.  We'll add it back in later down when building the DOMDocument
+	$techimg_full = get_string_between_inclusive($note, '<img', '>');
+
+	if($techimg_full){
+		//remove the tech image from the note
+		$note = str_replace($techimg_full, '' ,$note);
+
+		//does this append tech image properly?
+		//$note = $techimg_full;
+
+		//can we replace $techimg_full after </p>
+
+		$paragraph = get_string_between_inclusive($note, '<p>', '</p>');
+
+	//	print '<xmp>'.$paragraph.'</xmp>';
+		//print '<xmp>'.$techimg_full.'</xmp>';
+		$len = strlen($paragraph);
+
+		//insert the techimg to afer the paragraph
+		//todo: this does not work on the Electrical-3 scenario where the
+		//$note = substr_replace($note, $techimg_full, $len);
+
+
+
+	}
+	//end tech img
+
+
+
 
 	//print 'partial:'.$partial_table; // (result = dog)
 //end multiple table scenario
@@ -334,7 +386,7 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 	}
 	//$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
 
-	//need two table tags per 4/29/19 request
+	//need two table tags 
 
 	$tg_open = '<table type="outer"><table>'.$tgroup_string;
 //JCD  $tg_open = '<table type="outer"><table>'.$tgroup_string .'</theader>';
@@ -505,6 +557,20 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 						// And then append it to the "<product>" node
 						$product->appendChild($rp);  //this works to put the body node into product node
 					}
+
+					//add tech image
+					//add the tech image to the
+//					if($techimg_full){
+//						$ti = $newdoc->createElement('tech_img');
+//						$ti->nodeValue = htmlspecialchars($techimg_full);
+//						$product->appendChild($ti);
+//
+//						//unset variable
+//						unset($techimg_full);
+//					}
+
+
+
 
 					/* Start Lists Move from inside body to outside body*/
 					//identify the <ul> lists in the <body>
@@ -679,9 +745,28 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 				$uom->nodeValue = $subprod['in_purchase_unit'];
 				$childprod->appendChild($uom);
 
+
+
+				//get list price
+				$lp = number_format($subprod['in_list_price'],2);
+
+
+				//prop65 asterisk only when a4 value =='L' or 'P'
+				if($subprod['dwin_code_a4'] =='L' || $subprod['dwin_code_a4'] == 'P'){
+					//$p65 = $newdoc->createElement('prop_65');
+					//append list price with asterisk
+					$lp .= ' *';
+					//$p65->nodeValue = '*';
+					//$childprod->appendChild($p65);
+				}
+
+
+
+
+
 				//format list_price to two decimal places
 				$list_price = $newdoc->createElement('list_price');
-				$list_price->nodeValue = number_format($subprod['in_list_price'],2);
+				$list_price->nodeValue = $lp;
 				$childprod->appendChild($list_price);
 
 
@@ -736,6 +821,23 @@ function get_string_between($string, $start, $end){
 	$len = strpos($string, $end, $ini) - $ini;
 	return substr($string, $ini, $len);
 }
+
+function get_string_between_inclusive($string, $start, $end){
+	$string = ' ' . $string;
+	$ini = strpos($string, $start);
+	if ($ini == 0) return '';
+	//$ini += strlen($start);
+	//print "<br/><br/>ini=".$ini;
+	$len = (strpos($string, $end, $ini)- $ini)+strlen($end);
+	//print "<br/>string=".$string;
+	//print "<br/>end=".$end;
+	//print "<br/>ini=".$ini;
+	//print "<br/>len=".$len;
+
+	return substr($string, $ini, $len);
+}
+
+
 
 
 /*
@@ -804,10 +906,21 @@ function post_process_search_replace($filename){
 	$product_text = preg_replace("/h6>/", "strong>", $product_text);
 
 //"remove <body>"
+	//ABT Temp commented for dev
 	$product_text = preg_replace("/<body>/", "", $product_text);
 
 //"remove </body>"
+	//ABT Temp commented for dev
 	$product_text = preg_replace("/<\/body>/", "", $product_text);
+
+
+
+//"remove <tech_image>" wrapper
+//	$product_text = preg_replace("/<tech_image>/", "", $product_text);
+//"remove </tech_image>"
+	//$product_text = preg_replace("/<\/tech_image>/", "", $product_text);
+
+
 
 //"remove <a links"
 	$product_text = preg_replace("/<a.*<\/a>/", "", $product_text);
@@ -833,7 +946,8 @@ function post_process_search_replace($filename){
 	$product_text = preg_replace("/ems-fs01\/public share\/catalog/", "L:", $product_text);
 
 //"tech image tag path"
-	$product_text = preg_replace("/<img src=\"https:\/\/img2.activant-inet.com\/custom\/022170\/image\//", "<tech href=\"file:///L:/images/", $product_text);
+	//ABT temp commented this out to work on img removal from body
+//	$product_text = preg_replace("/<img src=\"https:\/\/img2.activant-inet.com\/custom\/022170\/image\//", "<tech href=\"file:///L:/images/", $product_text);
 
 //"image tag backslash path>"
 	$product_text = preg_replace("/<image href=\"file:\\\\+ems-fs01\\\\public share\\\\Web\\\\CONTENT\\\\_04 IMAGES LOADED\\\\_01 IMAGES STD\\\\/", "", $product_text);
@@ -998,3 +1112,53 @@ function post_process_search_replace($filename){
 	//file should continue to exist in its spot, so no action needed
 }
 
+/*
+ * Process the html "note"
+ * Find number of tables, then parse appropriately
+ */
+function process_note($note,&$newdoc){
+
+	//count # of tables  (likely always 1, but still check)
+	$table_count = substr_count($note,'<table');
+	//print "<br/>table count:".$table_count;
+
+	if($table_count == 2){
+	//	print_r($note);
+	}
+
+	
+	//$techimg = substr_count($note,'tech.jpg');
+	//if($techimg >=1){
+	//	print 'found a tech image<br/><br/>';
+		//print_r($note);
+
+
+
+
+			//print "removed tech image: ".$techimg_full;
+		//	print $note;
+//	}
+
+	//if($table_count > 0){
+//
+		//for($x=0; $x < $table_count; $x++){
+//
+//
+//			$partial_table_chunk = get_string_between($note, '<table', '</table>');
+//
+//			//find number of columns (<th>) in that table chunk
+//			$th_count = substr_count($partial_table_chunk,'<th');
+//			print "<br/>th count:".$th_count;
+//			//count number of table columns (<th>)
+//			$table_list[$x]=$th_count;
+//
+		//}
+//
+//
+//
+//
+	//}
+
+	return $note;
+
+}
