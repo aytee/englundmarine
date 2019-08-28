@@ -19,7 +19,7 @@ DB::$port = $db_port;   //usually 3306
 DB::$host = $db_host;  //IP or localhost
 
 //get list of departments
-$query = 'SELECT IN_EXT.inext_ext_35 FROM IN_EXT WHERE IN_EXT.in_store=1 AND IN_EXT.inext_ext_35<>"" GROUP BY IN_EXT.inext_ext_35';
+$query = 'SELECT IN_EXT.inext_ext_35 FROM `IN_EXT` INNER JOIN `IN` WHERE `IN_EXT`.`in_item_number`=`IN`.`in_item_number` AND `IN_EXT`.`in_store`=1 AND `IN_EXT`.`inext_ext_35`<>"" AND (`IN`.`in_catalogue_page` Between "0000" And "2000" Or `IN`.`in_catalogue_page`="ADD" Or `IN`.`in_catalogue_page`="REP") GROUP BY `IN_EXT`.`inext_ext_35';
 
 $dept_list = DB::query($query);
 

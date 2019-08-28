@@ -700,8 +700,13 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 //Save does work
 //$filename = 'englund.xml';
 
-if(isset($clean['type'])){
-	$filename = '../catalog_xml/englund_'.$clean["type"].'.xml';
+//if(isset($clean['type'])){
+//	$filename = '../catalog_xml/englund_'.$clean["type"].'.xml';
+
+$timestamp = date("mdy_hi"); 
+
+if(isset($clean['department'])){
+		$filename = '../catalog_xml/Export_'.$clean["department"].'  '.$timestamp.'.xml';
 
 }
 
@@ -949,6 +954,8 @@ function post_process_search_replace($filename){
 	$product_text = preg_replace("/<\/td>/", "</entry>", $product_text);
 	$product_text = preg_replace("/<table type=\"outer\">\n<table>/", "<table type=\"outer\"><table>", $product_text);
 	$product_text = preg_replace("/<\/table>\n<\/table>/", "<table type=\"outer\"><table", $product_text);
+	$product_text = preg_replace("/<tbody\/>/", " ", $product_text);
+	$product_text = preg_replace("/<br\/>/", " ", $product_text);
 
 //  Alternate Format to Fix TABLES - Find and Replace
 

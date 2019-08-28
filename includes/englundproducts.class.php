@@ -33,25 +33,25 @@ class EnglundProducts
 				'SELECT dw_item.dwin_display_item_number AS item_number, view_representative_items.dwin_display_item_number AS cluster,
        if(sgir_item_number IS NULL,"Regular", if(dw_item.dwin_display_item_number=view_representative_items.dwin_display_item_number,"parent","child")) AS item_type
        FROM dw_item 
-	   INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$this->department.'"
+	   INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$this->department.'" 
 	   INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
 	   LEFT JOIN SGIR ON dw_item.dwin_item_number = SGIR.sgir_item_number AND dw_item.dwin_store=1 
        LEFT JOIN view_representative_items ON SGIR.sgir_representative_item = view_representative_items.dwin_item_number
        LEFT JOIN dw_item AS dw_item_1 ON view_representative_items.dwin_item_number = dw_item_1.dwin_item_number AND dw_item_1.dwin_item_number=1
-	   WHERE (`IN`.`in_catalogue_page` Between "0000" And "2000" Or `IN`.`in_catalogue_page`="ADD")  
+	   WHERE (`IN`.`in_catalogue_page` Between "0000" And "2000" Or `IN`.`in_catalogue_page`="ADD") 
 	   
-	   UNION ALL
+       UNION ALL
 
-	   SELECT `dw_item_1`.`dwin_display_item_number` AS item_number, `SGIR`.`sgir_representative_item` AS cluster, "parent" AS item_type
-	 FROM `dw_item` 
-	 INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$this->department.'"
-	 INNER JOIN `IN` ON `dw_item`.`dwin_store` = `IN`.`in_store` AND `dw_item`.`dwin_item_number` = `IN`.`in_item_number` 
-	 INNER JOIN `SGIR` ON `IN`.`in_item_number` = `SGIR`.`sgir_item_number` 
-	 INNER JOIN `view_representative_items` ON `SGIR`.`sgir_representative_item` = `view_representative_items`.`dwin_item_number`
-	 INNER JOIN `dw_item` AS `dw_item_1` ON `view_representative_items`.`dwin_display_item_number` = `dw_item_1`.`dwin_item_number`
-	 WHERE (`IN`.`in_catalogue_page` Between "0000" And "2000" Or `IN`.`in_catalogue_page`="ADD") AND `dw_item`.`dwin_store`="1" AND `dw_item_1`.`dwin_store`="1"
-	 GROUP BY `dw_item_1`.`dwin_display_item_number`, `SGIR`.`sgir_representative_item`, "parent"
-	 HAVING `SGIR`.`sgir_representative_item`<>"" ';
+       SELECT `dw_item_1`.`dwin_display_item_number` AS item_number, `SGIR`.`sgir_representative_item` AS cluster, "parent" AS item_type
+     FROM `dw_item` 
+     INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$this->department.'"
+     INNER JOIN `IN` ON `dw_item`.`dwin_store` = `IN`.`in_store` AND `dw_item`.`dwin_item_number` = `IN`.`in_item_number` 
+     INNER JOIN `SGIR` ON `IN`.`in_item_number` = `SGIR`.`sgir_item_number` 
+     INNER JOIN `view_representative_items` ON `SGIR`.`sgir_representative_item` = `view_representative_items`.`dwin_item_number`
+     INNER JOIN `dw_item` AS `dw_item_1` ON `view_representative_items`.`dwin_display_item_number` = `dw_item_1`.`dwin_item_number`
+     WHERE (`IN`.`in_catalogue_page` Between "0000" And "2000" Or `IN`.`in_catalogue_page`="ADD") AND `dw_item`.`dwin_store`="1" AND `dw_item_1`.`dwin_store`="1"
+     GROUP BY `dw_item_1`.`dwin_display_item_number`, `SGIR`.`sgir_representative_item`, "parent"
+     HAVING `SGIR`.`sgir_representative_item`<>""   ';
 
 
 
