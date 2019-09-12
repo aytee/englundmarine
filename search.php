@@ -363,22 +363,19 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 		//start Jeremy's version -
 		$techimg_full = get_string_between_inclusive($note, '<img', '>');
 
-		if($techimg_full){
+	if($techimg_full){
 
-			$note1 = str_replace($techimg_full, '' ,$note);
+		$note1 = str_replace($techimg_full, '' ,$note);
 
-			$paragraph = get_string_between_inclusive($note, '<p>', '</p>');
+		$paragraph = get_string_between_inclusive($note, '<p>', '</p>');
 
-			$note2 = str_replace($paragraph, '' ,$note1);
+		$note2 = str_replace($paragraph, '' ,$note1);
 
-//			$note = $paragraph.$techimg_full.$note2;
-			//rebuild the note and add the tech image at the end ($note2)
-			$note = $paragraph.$note2;
+		$note = $paragraph.$techimg_full.$note2;
+		$techimg_full= str_replace($techimg_full,'',$techimg_full);
 
-
-		}
-		//end Jeremy's version
-
+	}
+	//end Jeremy's version
 
 
 //	}
