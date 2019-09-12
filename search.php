@@ -371,7 +371,11 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 
 			$note2 = str_replace($paragraph, '' ,$note1);
 
-			$note = $paragraph.$techimg_full.$note2;
+//			$note = $paragraph.$techimg_full.$note2;
+			//rebuild the note and add the tech image at the end ($note2)
+			$note = $paragraph.$note2;
+
+
 		}
 		//end Jeremy's version
 
@@ -392,15 +396,20 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 	//print "<br/>table count:".$table_count;
 
 	if($table_count >= 1){
-		print "<br/>table count:".$table_count;
+	//	print "<br/>table count:".$table_count;
 
 		//print_r($note);
 
+		$tempnote = $note;
+
 		//cycle through all tables
-		for($i = 1; $i <= $table_count; $i++){
+		for($i = 0; $i < $table_count; $i++){
 
 			//get table contents
-			$table_string = get_string_between_inclusive($note, '<table', '/table>');
+			$table_string = get_string_between_inclusive($tempnote, '<table', '/table>');
+
+			//snip out the table_string from the tempnote so that we can find subsequent tables
+			$tempnote = str_replace($table_string, '', $tempnote);
 
 			//add to table array
 			$tables[] = $table_string;
@@ -408,9 +417,6 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 
 		}
 
-//		print "<br/><br/>table_full::<br/><xmp>";
-//		print_r($table_string);
-//		print "</xmp><br/>";
 
 
 		//todo: remove each table from note and place into an array
@@ -424,6 +430,8 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 	//todo: We only care about the non-nested table scenario.  ignore the nested table scenario - ABT 9/10/19
 	//1. (non-nested)table open and close, then another table opens and closes : <table></table><table></table>
 	//2. (nested) table 1 opens, table 2 opens, table 2 closes, table 1 closes:  <table><table></table></table>
+
+	$newnote  = $note;
 
 	//cycle through list of tables
 	foreach ($tables as $delta => $table){
@@ -456,13 +464,15 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 		$table = str_replace('</table>', $tg_close, $table);
 
 
-//		print "<br/><br/>newtable::".$delta.":::<br/><xmp>";
-//		print_r($table);
-//		print "</xmp><br/>";
-//
 //		print "<br/><br/>orig_table::".$delta.":::<br/><xmp>";
 //		print_r($orig_table);
 //		print "</xmp><br/>";
+//
+//
+//		print "<br/><br/>newtable::".$delta.":::<br/><xmp>";
+//		print_r($table);
+//		print "</xmp><br/>";
+
 
 
 		//$table is now the reworked table string
@@ -470,15 +480,15 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 		//replace $orig_table string in $note with $table.  Replace just the first occurrence
 
 		//$note = str_replace($orig_table,$table,$note);
-		$pos = strpos($note, $orig_table);
+		$pos = strpos($newnote, $orig_table);
 		if ($pos !== false) {
-			$note = substr_replace($note, $table, $pos, strlen($orig_table));
+			$newnote = substr_replace($newnote, $table, $pos, strlen($orig_table));
 		}
 
 	}
 
 
-
+$note = $newnote;
 
 //end multiple table scenario
 //start single table scenario
