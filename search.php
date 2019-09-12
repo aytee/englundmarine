@@ -46,7 +46,7 @@ $args = array(
 
 //use the $clean array for all the sanitized $_GET values
 $clean = filter_input_array(INPUT_GET,$args);
-
+//print_R($clean);
 //Build products list
 $eproducts = new EnglundProducts();
 
@@ -107,19 +107,43 @@ $current_fineline = '';
 //query for all skus by department
 if($clean['type']=='all'){
 
-	$query = 'SELECT * FROM `dw_item` 
-		INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$eproducts->department.'"
-		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1	
-		
+//	$query = 'SELECT * FROM `dw_item`
+//		INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$eproducts->department.'"
+//		INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1
+//
+//
+//
+//		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+//		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+//		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+//		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+//		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
+//		ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
 
-		
-		INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
-		INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
-		INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
-		INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
-		INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1 
-		ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
 
+	//
+//jeremy's set 1 from 8/29
+	$query = 'SELECT * FROM `dw_item`
+        INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$eproducts->department.'"
+        INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1 
+        INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+        INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+        INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+        INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+        INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
+        ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
+
+	//set 2
+//	$query = 'SELECT * FROM `dw_item`
+//        INNER JOIN `IN_EXT` ON `dw_item`.`dwin_item_number`=`IN_EXT`.`in_item_number` AND `dw_item`.`dwin_store`=`IN_EXT`.`in_store` AND `dwin_store`=1 AND `IN_EXT`.`inext_ext_35`="'.$eproducts->department.'" AND (`dw_item`.`dwin_display_item_number`="SEA42020" OR `dw_item`.`dwin_display_item_number`="SEA420203-1" OR `dw_item`.`dwin_display_item_number`="SEA420209-1" OR `dw_item`.`dwin_display_item_number`="SEA420201-1" OR `dw_item`.`dwin_display_item_number`="SEA420204-1" OR `dw_item`.`dwin_display_item_number`="SEA420208-1" OR `dw_item`.`dwin_display_item_number`="SEA420202-1")
+//
+//        INNER JOIN `IN` ON `dw_item`.`dwin_item_number`=`IN`.`in_item_number` AND `dw_item`.`dwin_store`=`IN`.`in_store` AND `dw_item`.`dwin_store`=1 AND `IN`.`in_store`=1
+//        INNER JOIN `view_dw_department` ON `dw_item`.`dwin_store`=`view_dw_department`.`dwde_store_number` AND `dw_item`.`dwin_department`=`view_dw_department`.`dwde_department` AND `view_dw_department`.`dwde_store_number`=1
+//        INNER JOIN `view_dw_class` ON `dw_item`.`dwin_store`=`view_dw_class`.`dwcl_store` AND `dw_item`.`dwin_class`=`view_dw_class`.`dwcl_class` AND `view_dw_class`.`dwcl_store`=1
+//        INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
+//        INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
+//        INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1
+//        ORDER BY `dw_item`.`dwin_class` ASC, `dw_item`.`dwin_fineline`ASC, `dw_item`.`dwin_display_item_number`ASC   ' ;
 
 }
 
@@ -140,6 +164,13 @@ foreach ($topproducts_results as $topkey=>$toprow) {
 	$skus[] = $toprow['dwin_display_item_number'];
 
 }
+
+// this is necessary to remove duplicates that are generated from the SQL query
+//print_r($skus);
+//print '<br/><br/>----before unique----<br/><br/>';
+//$skus=  array_unique($skus);
+//print_r($skus);
+
 
 
 
@@ -287,29 +318,8 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 //	print_r($note);
 //	print '<br/><br/>';
 
-	//start multiple table scenario
-	//todo: count the number of table columns for a table in the $note string
-	//todo: This partial multi-table scenario is about half-baked, so revisit after proof of concept
 
-	//count # of tables  (likely always 1, but still check)
-	$table_count = substr_count($note,'<table');
-	//print "<br/>table count:".$table_count;
-
-//	if($table_count == 2){
-//	print_r($note);
-//	}
-
-//
-//	$table_list = array();
-//	//explode the $note
-//
-//	//if tables exist, find each one and how many rows in that table
-
-	//todo: couple scenarios
-	//1. (non-nested)table open and close, then another table opens and closes : <table></table><table></table>
-	//2. (nested) table 1 opens, table 2 opens, table 2 closes, table 1 closes:  <table><table></table></table>
-
-	$note = process_note($note,$newdoc);
+	//$note = process_note($note,$newdoc);
 
 
 //	if($table_count > 0){
@@ -335,67 +345,179 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 	//print_r($table_list);
 
 	//find tech img and remove it from the note.  We'll add it back in later down when building the DOMDocument
-	$techimg_full = get_string_between_inclusive($note, '<img', '>');
+//	$techimg_full = get_string_between_inclusive($note, '<img', '>');
 
-	if($techimg_full){
+//	if($techimg_full){
 		//remove the tech image from the note
-		$note = str_replace($techimg_full, '' ,$note);
-
-		//does this append tech image properly?
-		//$note = $techimg_full;
-
-		//can we replace $techimg_full after </p>
-
-		$paragraph = get_string_between_inclusive($note, '<p>', '</p>');
-
-	//	print '<xmp>'.$paragraph.'</xmp>';
-		//print '<xmp>'.$techimg_full.'</xmp>';
-		$len = strlen($paragraph);
+//		$note = str_replace($techimg_full, '' ,$note);
+//
+//		//can we replace $techimg_full after </p>
+//		$paragraph = get_string_between_inclusive($note, '<p>', '</p>');
+//
+//		$len = strlen($paragraph);
 
 		//insert the techimg to afer the paragraph
-		//todo: this does not work on the Electrical-3 scenario where the
+		//todo: this does not work on the Electrical-3 scenario
 		//$note = substr_replace($note, $techimg_full, $len);
 
+		//start Jeremy's version -
+		$techimg_full = get_string_between_inclusive($note, '<img', '>');
+
+		if($techimg_full){
+
+			$note1 = str_replace($techimg_full, '' ,$note);
+
+			$paragraph = get_string_between_inclusive($note, '<p>', '</p>');
+
+			$note2 = str_replace($paragraph, '' ,$note1);
+
+			$note = $paragraph.$techimg_full.$note2;
+		}
+		//end Jeremy's version
+
+
+
+//	}
+	//end tech img
+
+	//start multiple table scenario
+	//todo: count the number of table columns for a table in the $note string
+	//todo: This partial multi-table scenario is about half-baked, so revisit after proof of concept
+
+	//reset $tables to hold array of tables
+	$tables = array();
+
+	//count # of tables  (likely always 1, but still check)
+	$table_count = substr_count($note,'<table');
+	//print "<br/>table count:".$table_count;
+
+	if($table_count >= 1){
+		print "<br/>table count:".$table_count;
+
+		//print_r($note);
+
+		//cycle through all tables
+		for($i = 1; $i <= $table_count; $i++){
+
+			//get table contents
+			$table_string = get_string_between_inclusive($note, '<table', '/table>');
+
+			//add to table array
+			$tables[] = $table_string;
+
+
+		}
+
+//		print "<br/><br/>table_full::<br/><xmp>";
+//		print_r($table_string);
+//		print "</xmp><br/>";
+
+
+		//todo: remove each table from note and place into an array
+		//todo: analyze each table (count headers, etc) and place back into notes
 
 
 	}
-	//end tech img
+
+//
+	//todo: couple scenarios
+	//todo: We only care about the non-nested table scenario.  ignore the nested table scenario - ABT 9/10/19
+	//1. (non-nested)table open and close, then another table opens and closes : <table></table><table></table>
+	//2. (nested) table 1 opens, table 2 opens, table 2 closes, table 1 closes:  <table><table></table></table>
+
+	//cycle through list of tables
+	foreach ($tables as $delta => $table){
+
+		$orig_table = $table;
+
+		//reset $newtable string
+		$newtable ='';
+
+
+		//set to zero for default
+		$th_count = 0;
+		//find number of columns (<th>) in the entire $note product description
+		$th_count = substr_count($table,'<th');
+		//print "<br/>th count:".$th_count;
+
+		$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
+
+		//for the number of Th counts, add the <colspec>
+		for($x=1; $x<=$th_count;$x++){
+			$tgroup_string .= "<colspec colnum='".$x."' colname='col".$x."' colwidth='10mm'/>";
+		}
+
+
+		$tg_open = '<table type="outer"><table>'.$tgroup_string;
+
+		$tg_close = '</tgroup></table></table>';
+
+		$table = str_replace('<table>', $tg_open, $table);
+		$table = str_replace('</table>', $tg_close, $table);
+
+
+//		print "<br/><br/>newtable::".$delta.":::<br/><xmp>";
+//		print_r($table);
+//		print "</xmp><br/>";
+//
+//		print "<br/><br/>orig_table::".$delta.":::<br/><xmp>";
+//		print_r($orig_table);
+//		print "</xmp><br/>";
+
+
+		//$table is now the reworked table string
+
+		//replace $orig_table string in $note with $table.  Replace just the first occurrence
+
+		//$note = str_replace($orig_table,$table,$note);
+		$pos = strpos($note, $orig_table);
+		if ($pos !== false) {
+			$note = substr_replace($note, $table, $pos, strlen($orig_table));
+		}
+
+	}
 
 
 
 
-	//print 'partial:'.$partial_table; // (result = dog)
 //end multiple table scenario
 //start single table scenario
 
-	//$partial_table_chunk = get_string_between($note, '<table', '</table>');
 
 	//set to zero for default
-	$th_count = 0;
-	//find number of columns (<th>) in the entire $note product description
-	$th_count = substr_count($note,'<th');
-	//print "<br/>th count:".$th_count;
+//	$th_count = 0;
+//	//find number of columns (<th>) in the entire $note product description
+//	$th_count = substr_count($note,'<th');
+//
+//
+//	$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
+//
+//	//for the number of Th counts, add the <colspec>
+//	for($x=1; $x<=$th_count;$x++){
+//		$tgroup_string .= "<colspec colnum='".$x."' colname='col".$x."' colwidth='10mm'/>";
+//	}
+//
+//	//need two table tags
+//	$tg_open = '<table type="outer"><table>'.$tgroup_string;
+//
+//
+//	$tg_close = '</tgroup></table></table>';
+//
+//	$note = str_replace('<table>',$tg_open,$note);
+//	$note = str_replace('</table>',$tg_close,$note);
 
 
-	$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
-	//JCD $tgroup_string = "<tgroup><theader cols='".$th_count."' colsep='0'>";
-
-	//for the number of Th counts, add the <colspec>
-	for($x=1; $x<=$th_count;$x++){
-		$tgroup_string .= "<colspec colnum='".$x."' colname='col".$x."' colwidth='10mm'/>";
-	}
-	//$tgroup_string = "<tgroup cols='".$th_count."' colsep='0'>";
-
-	//need two table tags 
-
-	$tg_open = '<table type="outer"><table>'.$tgroup_string;
-//JCD  $tg_open = '<table type="outer"><table>'.$tgroup_string .'</theader>';
 
 
-	$tg_close = '</tgroup></table></table>';
 
-	$note = str_replace('<table>',$tg_open,$note);
-	$note = str_replace('</table>',$tg_close,$note);
+
+
+
+
+
+
+
+
 
 	//JCD  more find replace to fix table format  **can find </th>\n*</tr>**
 //	$note = str_replace('<tbody>','<thead>', $note);
@@ -560,15 +682,16 @@ FROM view_item_notes INNER JOIN dw_item ON view_item_notes.mg_group_name = dw_it
 
 					//add tech image
 					//add the tech image to the
-//					if($techimg_full){
-//						$ti = $newdoc->createElement('tech_img');
-//						$ti->nodeValue = htmlspecialchars($techimg_full);
-//						$product->appendChild($ti);
-//
-//						//unset variable
-//						unset($techimg_full);
-//					}
+					if($techimg_full){
+						$ti = $newdoc->createElement('tech_img');
+						$ti->nodeValue = htmlspecialchars($techimg_full);
+						$product->appendChild($ti);
 
+						//unset variable
+						unset($techimg_full);
+					}
+
+//end tech img
 
 
 
