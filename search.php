@@ -553,7 +553,14 @@ $note = $newnote;
 			INNER JOIN `view_dw_fineline` ON `dw_item`.`dwin_store`=`view_dw_fineline`.`dwfi_store` AND `dw_item`.`dwin_fineline`=`view_dw_fineline`.`dwfi_fineline_code` AND `view_dw_fineline`.`dwfi_store`=1
 			INNER JOIN `view_dw_vendor` ON `dw_item`.`dwin_store`=`view_dw_vendor`.`dwvm_store` AND `dw_item`.`dwin_primary_vendor`=`view_dw_vendor`.`dwvm_vendor_code` AND `view_dw_vendor`.`dwvm_store`=1
 			INNER JOIN `view_dw_manufacturer` ON `dw_item`.`dwin_store`=`view_dw_manufacturer`.`dwvm_store` AND `dw_item`.`dwin_manufacturer`=`view_dw_manufacturer`.`dwvm_vendor_code` AND `view_dw_manufacturer`.`dwvm_store`=1 
-			WHERE dwin_display_item_number = %s',$sku);
+			WHERE dwin_display_item_number = %s
+			ORDER BY `dw_item`.`dwin_sequence_number` DESC '
+			,$sku
+
+
+
+
+	);
 
 
 	//array of fields  to show on the XML output.
@@ -849,14 +856,26 @@ $note = $newnote;
 			//append child to Product node
 			$product->appendChild($children);
 
-			foreach($product_families[$val['dwin_display_item_number']]['children'] as $pk=>$pv){
+			//build an array of children products in order to sort for THIS particular parent product
+			foreach($product_families[$val['dwin_display_item_number']]['children'] as $pk=>$pv) {
+				$subprods[] = $product_families[$val['dwin_display_item_number']][$pv];
+			}
 
-				$subprod = $product_families[$val['dwin_display_item_number']][$pv];
+			//now order the subproducts for this particular parent product
+				usort($subprods, 'sortByOption');
+
+			//we have the full array of subproducts for this particular parent, so iterate through the children array
+			foreach($subprods as $subprod){
+			//foreach($product_families[$val['dwin_display_item_number']]['children'] as $pk=>$pv){
+//print($pv);
+				//$subprod = $product_families[$val['dwin_display_item_number']][$pv];
 
 
 				$childprod = $newdoc->createElement('subproduct');
 				//shoudl be attribute
-				$childprod->setAttribute("id", $pv);
+				//$childprod->setAttribute("id", $pv);
+				$childprod->setAttribute("id", $subprod['dwin_item_number']);
+
 
 				//$childprod->nodeValue = $pv;
 				$children->appendChild($childprod);
@@ -870,6 +889,11 @@ $note = $newnote;
 				$description = $newdoc->createElement('description');
 				$description->nodeValue = htmlspecialchars($subprod['dwin_item_description']);
 				$childprod->appendChild($description);
+
+				$seq = $newdoc->createElement('seq');
+				$seq->nodeValue = htmlspecialchars($subprod['dwin_sequence_number']);
+				$childprod->appendChild($seq);
+
 
 				$uom = $newdoc->createElement('uom');
 				$uom->nodeValue = $subprod['in_purchase_unit'];
@@ -905,7 +929,7 @@ $note = $newnote;
 
 		}
 
-
+		unset($subprods); //clean this up for the next round
 
 	}
 
@@ -1291,4 +1315,10 @@ function process_note($note,&$newdoc){
 
 	return $note;
 
+}
+
+function sortByOption($a, $b) {
+	return strcmp($a['dwin_sequence_number'], $b['dwin_sequence_number']);
+	//return strcmp($b['dwin_sequence_number'], $a['dwin_sequence_number']); //reverse sort
+	//return $b['list_price'] > $a['list_price'] ? 1 : -1;  //for float
 }
